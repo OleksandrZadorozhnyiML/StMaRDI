@@ -1,0 +1,268 @@
+---
+title: "Alarm dataset"
+author: "Oleksandr Zadorozhnyi"
+output:
+  html_document:
+    df_print: paged
+  github_document: default
+  html_notebook: default
+---
+***Setup of the problem ***
+
+In the context of graphical modeling and structure learning from data we consider a simple task of determining the most appropriate graphical structure for a Bayesian network model (DAG estimation) based on the available data. This problem is fundamental in probabilistic graphical modeling, and it involves identifying the conditional dependencies between variables in the dataset, which are represented by edges (arcs) in the Bayesian network.
+
+In this notebook we perform a simple experiment to estimate the structure between the covariates from the (subset) of dataset "alarm". 
+
+Loading the required libraries. 
+
+```{r}
+library(bnlearn)
+library(qgraph)
+library("huge")
+library(ggplot2)
+library(tidyverse)
+```
+Loading the data from the package *"bnlearn"*
+```{r}
+data("alarm")
+head(alarm)
+```
+
+**Description of the data**.
+
+The ALARM ("A Logical Alarm Reduction Mechanism") is a Bayesian network designed to provide an alarm message system for patient monitoring. 
+
+**The alarm data set contains the following 37 variables **:
+
+    CVP (central venous pressure): a three-level factor with levels LOW, NORMAL and HIGH.
+
+    PCWP (pulmonary capillary wedge pressure): a three-level factor with levels LOW, NORMAL and HIGH.
+
+    HIST (history): a two-level factor with levels TRUE and FALSE.
+
+    TPR (total peripheral resistance): a three-level factor with levels LOW, NORMAL and HIGH.
+
+    BP (blood pressure): a three-level factor with levels LOW, NORMAL and HIGH.
+
+    CO (cardiac output): a three-level factor with levels LOW, NORMAL and HIGH.
+
+    HRBP (heart rate / blood pressure): a three-level factor with levels LOW, NORMAL and HIGH.
+
+    HREK (heart rate measured by an EKG monitor): a three-level factor with levels LOW, NORMAL and HIGH.
+
+    HRSA (heart rate / oxygen saturation): a three-level factor with levels LOW, NORMAL and HIGH.
+
+    PAP (pulmonary artery pressure): a three-level factor with levels LOW, NORMAL and HIGH.
+
+    SAO2 (arterial oxygen saturation): a three-level factor with levels LOW, NORMAL and HIGH.
+
+    FIO2 (fraction of inspired oxygen): a two-level factor with levels LOW and NORMAL.
+
+    PRSS (breathing pressure): a four-level factor with levels ZERO, LOW, NORMAL and HIGH.
+
+    ECO2 (expelled CO2): a four-level factor with levels ZERO, LOW, NORMAL and HIGH.
+
+    MINV (minimum volume): a four-level factor with levels ZERO, LOW, NORMAL and HIGH.
+
+    MVS (minimum volume set): a three-level factor with levels LOW, NORMAL and HIGH.
+
+    HYP (hypovolemia): a two-level factor with levels TRUE and FALSE.
+
+    LVF (left ventricular failure): a two-level factor with levels TRUE and FALSE.
+
+    APL (anaphylaxis): a two-level factor with levels TRUE and FALSE.
+
+    ANES (insufficient anesthesia/analgesia): a two-level factor with levels TRUE and FALSE.
+
+    PMB (pulmonary embolus): a two-level factor with levels TRUE and FALSE.
+
+    INT (intubation): a three-level factor with levels NORMAL, ESOPHAGEAL and ONESIDED.
+
+    KINK (kinked tube): a two-level factor with levels TRUE and FALSE.
+
+    DISC (disconnection): a two-level factor with levels TRUE and FALSE.
+
+    LVV (left ventricular end-diastolic volume): a three-level factor with levels LOW, NORMAL and HIGH.
+
+    STKV (stroke volume): a three-level factor with levels LOW, NORMAL and HIGH.
+
+    CCHL (catecholamine): a two-level factor with levels NORMAL and HIGH.
+
+    ERLO (error low output): a two-level factor with levels TRUE and FALSE.
+
+    HR (heart rate): a three-level factor with levels LOW, NORMAL and HIGH.
+
+    ERCA (electrocauter): a two-level factor with levels TRUE and FALSE.
+
+    SHNT (shunt): a two-level factor with levels NORMAL and HIGH.
+
+    PVS (pulmonary venous oxygen saturation): a three-level factor with levels LOW, NORMAL and HIGH.
+
+    ACO2 (arterial CO2): a three-level factor with levels LOW, NORMAL and HIGH.
+
+    VALV (pulmonary alveoli ventilation): a four-level factor with levels ZERO, LOW, NORMAL and HIGH.
+
+    VLNG (lung ventilation): a four-level factor with levels ZERO, LOW, NORMAL and HIGH.
+
+    VTUB (ventilation tube): a four-level factor with levels ZERO, LOW, NORMAL and HIGH.
+
+    VMCH (ventilation machine): a four-level factor with levels ZERO, LOW, NORMAL and HIGH.
+
+
+Transforming the data to decode the categorical values as integers. 
+
+```{r}
+alarm_df <- as.data.frame(na.omit(alarm))
+
+p = length(names(alarm))
+n = dim(alarm)[1]
+ for (i in c(1:p)) {
+     alarm_df[,i]<-as.numeric(alarm_df[,i])
+}
+```
+
+ Applying nonparanormal transformation to standardize the data. More precisely it transforms the data using the truncated empirical probability distribution function and the final re-normalization.
+ 
+```{r}
+
+selection <- c("TPR","PMB","VTUB","VLNG","CO")
+
+
+#alarm_df <- huge.npn(alarm_df)
+alarm_df_npn = huge.npn(alarm_df)
+head(alarm_df_npn)
+
+```
+ Subselecting certain variables for analysis. Splitting the data set into the train (structure estimation) and the dataset for inference (given the structure of the estimated graph) on the particular covariate. Correlation maps of the given sub-selection of variables is presented.
+ 
+```{r,echo=FALSE}
+
+str_est_ratio = 0.66
+index_set = c(1:n)
+
+#str_set = sample(index_set, str_est_ratio * length(index_set))
+str_set = c(1:round(str_est_ratio*n))
+est_set = setdiff(index_set, str_set)
+
+
+library(ggplot2)
+library(tidyverse)
+dat <- as.matrix(cor(alarm_df[,selection]))
+rownames(dat) = NULL
+colnames(dat) = NULL
+
+
+## convert to tibble, add row identifier, and shape "long"
+dat2 <-
+  dat %>%
+  as_tibble() %>%
+  rownames_to_column("Var1") %>%
+  pivot_longer(-Var1, names_to = "Var2", values_to = "value") %>%
+  mutate(
+    Var1 = factor(Var1, levels = 1:5),
+    Var2 = factor(gsub("V", "", Var2), levels = 1:5)
+  )
+#> Warning: The `x` argument of `as_tibble.matrix()` must have unique column names if
+#> `.name_repair` is omitted as of tibble 2.0.0.
+#> ℹ Using compatibility `.name_repair`.
+
+ggplot(dat2, aes(Var1, Var2)) +
+  geom_tile(aes(fill = value)) +
+  geom_text(aes(label = round(value, 2))) +
+  scale_fill_gradient(low = "blue", high = "red")+
+  scale_x_discrete(name=c(""),breaks= 1:5,labels=selection) + 
+  scale_y_discrete(name=c(""),breaks=1:5,labels =selection)
+```
+
+Defining the true network structure for the alarm dataset (see paper "Learning Bayesian Networks with the bnlearn R Package" by M.Scutari)
+
+```{r}
+dag_alarm <- empty.graph(names(alarm))
+modelstring(dag_alarm) <- paste("[HIST|LVF][CVP|LVV][PCWP|LVV][HYP][LVV|HYP:LVF]","[LVF][STKV|HYP:LVF][ERLO][HRBP|ERLO:HR][HREK|ERCA:HR][ERCA][HRSA|ERCA:HR]","[ANES][APL][TPR|APL][ECO2|ACO2:VLNG][KINK][MINV|INT:VLNG][FIO2]","[PVS|FIO2:VALV][SAO2|PVS:SHNT][PAP|PMB][PMB][SHNT|INT:PMB][INT]","[PRSS|INT:KINK:VTUB][DISC][MVS][VMCH|MVS][VTUB|DISC:VMCH]","[VLNG|INT:KINK:VTUB][VALV|INT:VLNG][ACO2|VALV][CCHL|ACO2:ANES:SAO2:TPR]","[HR|CCHL][CO|HR:STKV][BP|CO:TPR]", sep = "")
+qgraph(dag_alarm)
+```
+
+Selection of the specific covariates to perform the structure estimation and the inference in the model task. 
+```{r}
+alarm_dfSubset <-as.data.frame(alarm_df[,selection])
+
+alarm_df_str_est = alarm_dfSubset[str_set,]
+alarm_df_fit = alarm_dfSubset[est_set,]
+head(alarm_df_str_est)
+```
+
+Applying the algorithm pc.stable to the dataset alarm 
+```{r}
+Res<-pc.stable(alarm_df_str_est)
+
+bnlearn:::print.bn(Res)
+
+```
+Applying a set of constraint-based algorithms to estimate the DAG structure between the selected variables. 
+
+```{r}
+Res_stable=pc.stable(alarm_df_str_est)
+
+Res_iamb=iamb(alarm_df_str_est)
+
+Res_gs=gs(alarm_df_str_est)
+
+Res_fiamb=fast.iamb(alarm_df_str_est)
+
+Res_mmpc=mmpc(alarm_df_str_est)
+
+```
+
+Visualizing the estimated graph with PC-stable algorithm with respect to the chosen variables. As we see the pc.stable algorithm returns a CPDAG. For the inference purposes we manually set the (undirected) edges to specific values. 
+```{r}
+Labels <- c(
+  "Total peripheral resistance",
+  "Pulmonary embolus",
+  "Ventilation tube",
+  "Lung ventilation",
+  "Cardiac output"
+)
+
+qgraph(Res, nodeNames = Labels, legend.cex = 0.35)
+
+# black magic to make it a proper DAG
+
+Res <- set.arc(Res, from = "PMB",to="CO")
+Res <- set.arc(Res, from = "TPR",to="CO")
+Res = set.arc(Res,from = "VLNG",to="VTUB")
+
+Res
+graph <- qgraph(Res, nodeNames = Labels, legend.cex = 0.35,
+                asize=5,edge.color="black")
+```
+Fitting the model to the dataset. 
+```{r}
+
+fit <- bn.fit(Res, alarm_df_fit)
+fit$CO
+fit$VTUB
+fit$TPR
+
+```
+
+Nonparametrical bootstraping of the results of the model. 
+
+```{r,warning=FALSE}
+set.seed(1)
+
+boot <- boot.strength(as.data.frame(alarm_dfSubset), R = 100, algorithm = "pc.stable")
+
+boot
+
+qgraph(boot,nodeNames=Labels,legend.cex = 0.35,
+       edge.labels=TRUE,layout=graph$layout,asize=5,
+       edge.color="black")
+```
+
+
+***References *** 
+
+[1] Beinlich I, Suermondt HJ, Chavez RM, Cooper GF (1989). "The ALARM Monitoring System: A Case Study with Two Probabilistic Inference Techniques for Belief Networks". Proceedings of the 2nd European Conference on Artificial Intelligence in Medicine, 247–256. 
+
+[2] Scutari, M. Learning Bayesian Networks with bnlearn R package. https://arxiv.org/pdf/0908.3817.pdf
+
