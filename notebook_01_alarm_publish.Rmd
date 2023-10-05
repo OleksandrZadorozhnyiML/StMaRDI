@@ -11,7 +11,7 @@ output:
 
 In the context of graphical modeling and structure learning from data we consider a simple task of determining the most appropriate graphical structure for a Bayesian network model (DAG estimation) based on the available data. This problem is fundamental in probabilistic graphical modeling, and it involves identifying the conditional dependencies between variables in the dataset, which are represented by edges (arcs) in the Bayesian network.
 
-In this notebook we perform a simple experiment to estimate the structure between the covariates from the (subset) of dataset "alarm". 
+In this notebook we aim to perform a simple experiment to estimate the structure between the covariates from the (subset) of dataset "alarm". 
 
 Loading the required libraries. 
 
