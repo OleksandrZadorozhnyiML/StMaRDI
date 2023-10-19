@@ -1,6 +1,6 @@
 ---
 title: "Churn analysis of the telekom data"
-author: Oleksandr Zadorozhnyi
+author: Oleksandr Zadorozhnyi (extension of the dataset analysis https://mlcourse.ai/book/topic01/topic01_pandas_data_analysis.html to include causal inference methods and prediction importance)
 date: "5/10/2023"
 output:
   html_document
