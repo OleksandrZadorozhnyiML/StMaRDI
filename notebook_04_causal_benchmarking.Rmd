@@ -134,10 +134,10 @@ for (i in setdiff(whitelist,drop_f)) {
     print(hsic_12$p.value)
     print(hsic_21$p.value)
     
-    if (hsic_12$p.value<p_val){
+    if (hsic_12$p.value<hsic_21$p.value){
       result = c(1,2)
     }
-    else if (hsic_21$p.value<p_val){
+    else if (hsic_21$p.value<hsic_12$p.value){
       result = c(2,1)
     }
     else {
