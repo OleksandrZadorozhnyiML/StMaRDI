@@ -1,6 +1,6 @@
 ---
 title: "Causal analysis based on the benchmarking of the Tubingen datasets"
-author: Oleksandr Zadorozhnyi (author thanks to Daniela Schkoda for providing the code for the analysis of the ground truth model in the tubingen dataset)
+author: Oleksandr Zadorozhnyi (author thanks to Daniela Schkoda for providing the code for the analysis of the ground truth model in the Tuebingen dataset)
 date: "16/10/2023"
 output:
   html_document
