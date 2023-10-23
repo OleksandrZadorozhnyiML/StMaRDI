@@ -1,6 +1,6 @@
 ---
 title: "Causal analysis based on the benchmarking of the Tubingen datasets"
-author: Oleksandr Zadorozhnyi (author thanks to Daniela Schkoda for providing the code for the analysis of the ground truth model in the Tuebingen dataset)
+author: Oleksandr Zadorozhnyi (author thanks to Daniela Schkoda for providing the code for the analysis of the ground truth model in the tubingen dataset)
 date: "16/10/2023"
 output:
   html_document
@@ -65,7 +65,6 @@ for (i in 1:5){
 
 ```{r}
 library(ggplot2)
-library(rlingam)
 
 set.seed(1)
 
@@ -77,6 +76,8 @@ descriptions <- sprintf("https://webdav.tuebingen.mpg.de/cause-effect/pair%04d_d
 
 We are considering the datasets which have 2 variables: in the following we use the HSIC criterion to test for independence of the residuals and covariates
 ```{r}
+library("utils")
+
 results <- data.frame(matrix(nrow = 0, ncol = 2))
 colnames(results) <- c("pair", "HSIC test")
 
@@ -87,37 +88,37 @@ library(krr)
 library(dHSIC)
 n = 100 
 
-for (i in setdiff(whitelist,drop_f)) {
+for (i in setdiff(whitelist$whitelist,drop_f)) {
   # Ground truth files
+
   if (i %in% c(86, 88)) {
     expected = c(1, 2)
   } else {
-    description_file <-url(sprintf("https://webdav.tuebingen.mpg.de/cause-effect/pair%04d_des.txt", i))
+    description_file  = url(sprintf("https://webdav.tuebingen.mpg.de/cause-effect/pair%04d_des.txt", 1))
     # Pair 86: x to y, 88 x to y
-    description = paste(readLines(description_file), collapse=" ")
-    description = gsub(" ", "", description)
-    if (grepl(">[Yy]|[Yy]<", description)) {
+    description1 = paste(readLines(description_file), collapse=" ")
+    description1 = gsub(" ", "", description1)
+    if (grepl(">[Yy]|[Yy]<", description1)) {
       expected = c(1, 2)
-    } else if (grepl(">[Xx]|[Xx]<", description)) {
+    } else if (grepl(">[Xx]|[Xx]<", description1)) {
       expected = c(2, 1)
     } else {
       print("This shouldn't happen")
     }
-    print(expected)
+    # print(expected)
   }
   
-  data_file <- url(sprintf("https://webdav.tuebingen.mpg.de/cause-effect/pair%04d.txt", i))
+  # data_file <- url(sprintf("https://webdav.tuebingen.mpg.de/cause-effect/pair%04d.txt", i))
     cause_effect_pair = read.table(filenames[i], header=F)
     cause_effect_pair = as.data.frame(as.matrix(cause_effect_pair[1:min(nrow(cause_effect_pair),n),]))
     var1  = as.matrix(cause_effect_pair[,1])
     var2  = as.matrix(cause_effect_pair[,2])
     # LiNGAM
     # Residual analysis based on HSIC test
-    
+    print(i)
     # Fit the ridge regression model
     fit_1 = krr(var1, var2, sigma = 1, lambda = 1)
     #predict_1 =  predict(fit_1, xnew =x1_seq )
-
 
     fit_2 = krr(var2, var1, sigma = 1, lambda = 1)
     #predict_2 = predict(fit_2,xnew  = x2_seq)
@@ -130,9 +131,9 @@ for (i in setdiff(whitelist,drop_f)) {
     hsic_12 = dhsic.test(residuals_1,var1)
     hsic_21 = dhsic.test(residuals_2,var2)
     
-    print(sprintf("Pair%04d",i))
-    print(hsic_12$p.value)
-    print(hsic_21$p.value)
+   #  print(sprintf("Pair%04d",i))
+   #  print(hsic_12$p.value)
+   #  print(hsic_21$p.value)
     
     if (hsic_12$p.value<hsic_21$p.value){
       result = c(1,2)
@@ -141,11 +142,12 @@ for (i in setdiff(whitelist,drop_f)) {
       result = c(2,1)
     }
     else {
-      result = c(1,1)
+      result = c(1,2)
     }
     # Results
     results[nrow(results) + 1,] <- c(i, all(expected == result))
 }
+
 ```
 
 
