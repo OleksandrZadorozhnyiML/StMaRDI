@@ -2,12 +2,15 @@
 title: "Alarm dataset"
 author: "Oleksandr Zadorozhnyi"
 output:
-  html_document:
-    df_print: paged
   github_document: default
-  html_notebook: default
 ---
-***Setup of the problem ***
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+
+__Setup of the problem__
 
 In the context of graphical modeling and structure learning from data we consider a simple task of determining the most appropriate graphical structure for a Bayesian network model (DAG estimation) based on the available data. This problem is fundamental in probabilistic graphical modeling, and it involves identifying the conditional dependencies between variables in the dataset, which are represented by edges (arcs) in the Bayesian network.
 
@@ -19,7 +22,6 @@ Loading the required libraries.
 library(bnlearn)
 library(qgraph)
 library("huge")
-library(ggplot2)
 library(tidyverse)
 ```
 Loading the data from the package *"bnlearn"*
@@ -28,11 +30,11 @@ data("alarm")
 head(alarm)
 ```
 
-**Description of the data**.
+__Description of the data__.
 
 The ALARM ("A Logical Alarm Reduction Mechanism") is a Bayesian network designed to provide an alarm message system for patient monitoring. 
 
-**The alarm data set contains the following 37 variables **:
+__The alarm data set contains the following 37 variables__:
 
     CVP (central venous pressure): a three-level factor with levels LOW, NORMAL and HIGH.
 
@@ -260,9 +262,12 @@ qgraph(boot,nodeNames=Labels,legend.cex = 0.35,
 ```
 
 
-***References *** 
+__References__ 
 
 [1] Beinlich I, Suermondt HJ, Chavez RM, Cooper GF (1989). "The ALARM Monitoring System: A Case Study with Two Probabilistic Inference Techniques for Belief Networks". Proceedings of the 2nd European Conference on Artificial Intelligence in Medicine, 247–256. 
+
+[1] Beinlich, I.A., Suermondt, H.J., Chavez, R.M., Cooper, G.F. (1989). The ALARM Monitoring System: A Case Study with two Probabilistic Inference Techniques for Belief Networks. In: Hunter, J., Cookson, J., Wyatt, J. (eds) AIME 89. Lecture Notes in Medical Informatics, vol 38. Springer, Berlin, Heidelberg. https://doi.org/10.1007/978-3-642-93437-7_28
+
 
 [2] Scutari, M. Learning Bayesian Networks with bnlearn R package. https://arxiv.org/pdf/0908.3817.pdf
 
