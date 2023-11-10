@@ -321,12 +321,12 @@ Metric evaluation for procedure 2
 
 [1] Margaritis D (2003). Learning Bayesian Network Model Structure from Data. Ph.D. thesis, School of Computer Science, Carnegie-Mellon University, Pittsburgh, PA. Available as Technical Report CMU-CS-03-153.
 
-[2] Spirtes, P., and Glymour, C., 1991. An Algorithm for Fast Recovery of Sparse Causal Graphs. Social Science Computer Review, vol. 9, Iss. 1, 62–72.
+[2] Spirtes, P., and Glymour, C., 1991. An Algorithm for Fast Recovery of Sparse Causal Graphs. Social Science Computer Review, vol. 9, Iss. 1, 62–72. https://doi.org/10.1177/089443939100900106
 
-[3] P. Spirtes, C. Glymour, and R. Scheines. Causation, Prediction, and Search. MIT press, 2nd edition,2000.
+[3] P. Spirtes, C. Glymour, and R. Scheines. Causation, Prediction, and Search. MIT press, 2nd edition,2000.  https://doi.org/10.7551/mitpress/1754.001.0001 
 
-[4] Tsamardinos, I., Aliferis, C.F. and Statnikov, A., 2003, August. Time and sample efficient discovery of Markov blankets and direct causal relations. In Proceedings of the ninth ACM SIGKDD international conference on Knowledge discovery and data mining (pp. 673-678).
+[4] Tsamardinos, I., Aliferis, C.F. and Statnikov, A., 2003, August. Time and sample efficient discovery of Markov blankets and direct causal relations. In Proceedings of the ninth ACM SIGKDD international conference on Knowledge discovery and data mining (pp. 673-678). https://doi.org/10.1145/956750.956838 
 
-[5] Tsamardinos I, Aliferis CF, Statnikov A (2003). “Algorithms for Large Scale Markov Blanket Discovery.” In “Proceedings of the Sixteenth International Florida Artificial Intelligence Research Society Conference,” pp. 376–381. AAAI Press.
+[5] Tsamardinos I, Aliferis CF, Statnikov A (2003). “Algorithms for Large Scale Markov Blanket Discovery.” In “Proceedings of the Sixteenth International Florida Artificial Intelligence Research Society Conference,” pp. 376–381. AAAI Press. In https://doi.org/10.32473/flairs.v33i0.123621 
 
 
