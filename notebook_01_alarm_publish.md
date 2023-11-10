@@ -2,7 +2,7 @@ Alarm dataset
 ================
 Oleksandr Zadorozhnyi
 
-***Setup of the problem ***
+**Setup of the problem**
 
 In the context of graphical modeling and structure learning from data we
 consider a simple task of determining the most appropriate graphical
@@ -65,7 +65,7 @@ head(alarm)
 The ALARM (“A Logical Alarm Reduction Mechanism”) is a Bayesian network
 designed to provide an alarm message system for patient monitoring.
 
-**The alarm data set contains the following 37 variables **:
+**The alarm data set contains the following 37 variables**:
 
     CVP (central venous pressure): a three-level factor with levels LOW, NORMAL and HIGH.
 
@@ -427,12 +427,19 @@ qgraph(boot,nodeNames=Labels,legend.cex = 0.35,
 
 ![](notebook_01_alarm_publish_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
-***References ***
+**References**
 
 \[1\] Beinlich I, Suermondt HJ, Chavez RM, Cooper GF (1989). “The ALARM
 Monitoring System: A Case Study with Two Probabilistic Inference
 Techniques for Belief Networks”. Proceedings of the 2nd European
 Conference on Artificial Intelligence in Medicine, 247–256.
+
+\[1\] Beinlich, I.A., Suermondt, H.J., Chavez, R.M., Cooper, G.F.
+(1989). The ALARM Monitoring System: A Case Study with two Probabilistic
+Inference Techniques for Belief Networks. In: Hunter, J., Cookson, J.,
+Wyatt, J. (eds) AIME 89. Lecture Notes in Medical Informatics, vol 38.
+Springer, Berlin, Heidelberg.
+<https://doi.org/10.1007/978-3-642-93437-7_28>
 
 \[2\] Scutari, M. Learning Bayesian Networks with bnlearn R package.
 <https://arxiv.org/pdf/0908.3817.pdf>
