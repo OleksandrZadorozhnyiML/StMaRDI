@@ -2,11 +2,14 @@
 title: "Alarm dataset"
 author: "Oleksandr Zadorozhnyi"
 output:
-  html_document:
-    df_print: paged
   github_document: default
-  html_notebook: default
 ---
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+
 ***Setup of the problem ***
 
 In the context of graphical modeling and structure learning from data we consider a simple task of determining the most appropriate graphical structure for a Bayesian network model (DAG estimation) based on the available data. This problem is fundamental in probabilistic graphical modeling, and it involves identifying the conditional dependencies between variables in the dataset, which are represented by edges (arcs) in the Bayesian network.
@@ -19,7 +22,6 @@ Loading the required libraries.
 library(bnlearn)
 library(qgraph)
 library("huge")
-library(ggplot2)
 library(tidyverse)
 ```
 Loading the data from the package *"bnlearn"*
