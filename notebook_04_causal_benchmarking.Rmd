@@ -74,7 +74,7 @@ descriptions <- sprintf("https://webdav.tuebingen.mpg.de/cause-effect/pair%04d_d
 ```
 
 
-We are considering the datasets which have 2 variables: in the following we use the HSIC criterion to test for independence of the residuals and covariates
+We are considering the datasets which have 2 variables: in the following we use the HSIC [1,4] criterion to test for independence of the residuals and covariates
 ```{r}
 library("utils")
 
@@ -151,12 +151,14 @@ for (i in setdiff(whitelist$whitelist,drop_f)) {
 ```
 
 
-***Refererences***
+***References***
 
-[1] Reference on HSIC
+[1] Pfister, N, and Peter, J,. Independence Testing via Hilbert Schmidt Independence Criterion. https://doi.org/10.1111/rssb.12235
 
-[2] Reference of Pearson independence test (PC algorithm)
+[2] https://vulstats.ucsd.edu/chi-squared.html
 
-[3] Reference of conditional independence tests
+[3] A. Gretton, K. Fukumizu, C. H. Teo, L. Song, B. Sch\''olkopf, and A. Smola. A kernel statistical test of independence. In Advances in Neural Information Processing Systems 20 (NIPS), 2008. SBN: 978-1-60560-949-2
+
+[4] Peters, J., Mooij, J.M., Janzing, D. and Schölkopf, B., 2014. Causal discovery with continuous additive noise models.
 
 
