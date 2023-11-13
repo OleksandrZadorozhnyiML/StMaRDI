@@ -1,4 +1,4 @@
-**Description of the dataset**
+***Description of the dataset***
 
 The churn dataset, as a data frame, contains 50000 rows (customers) and
 20 columns (variables/features). The 20 variables are:
@@ -62,7 +62,7 @@ library("dplyr")
 df = read.csv("churn.csv")
 ```
 
-### Loading the churn dataset
+__Loading the churn dataset__
 
 ``` r
 #df = churn
@@ -115,7 +115,7 @@ df$voice.plan = ifelse(df$voice.plan == "yes", 1, 0)
 df$intl.plan =  ifelse(df$intl.plan == "yes", 1, 0)
 ```
 
-# How many loyal and churn clients are there in the dataset?
+__How many loyal and churn clients are there in the dataset?__
 
 ``` r
 # Count the frequency of unique values of 
@@ -200,14 +200,14 @@ mean(df[df$churn==0,features]$day.mins)
     ## [1] 175.7466
 
 ``` r
-# What is the maximum length of the loyal clients who do not use the international plan ?
+__What is the maximum length of the loyal clients who do not use the international plan?__
 
 max(df[(df$churn==0) &(df$intl.plan == 0),]$intl.mins)
 ```
 
     ## [1] 19.7
 
-###Creating some pivot tables for specific values of customer calls’
+__Creating some pivot tables for specific values of customer calls__
 
 ``` r
 cols = c("area.code","day.calls", "eve.calls", "night.calls")
@@ -270,7 +270,7 @@ ggplot(dat2, aes(Var1, Var2)) +
 ggsave("churn_corr.png")
 ```
 
-# Specifying the train and test subsets of the data
+__Specifying the train and test subsets of the data__
 
 ``` r
 n = nrow(df)
