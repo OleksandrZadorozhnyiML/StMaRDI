@@ -23,11 +23,54 @@ library("bnlearn")
 library("qgraph")
 library("igraph")
 ```
+Reading the files from Zenodo entry in the community
+
+```{r}
+# necessary libraries to use for Zenodo REST-API
+library(litr)
+library(zen4R)
+
+zenodo <- ZenodoManager$new(
+  logger = "INFO" # use "DEBUG" to see detailed API operation logs, use NULL if you don't want logs at all
+)
+
+# downloading files using zenodo doi and reading from the file 
+rec1 <- zenodo$getRecordByDOI("10.5281/zenodo.7676616")
+files <- rec1$listFiles(pretty = TRUE)
+
+#create a folder where to download files from record
+dir.create("download_zenodo")
+
+#download files
+rec1$downloadFiles(path = "download_zenodo")
+downloaded_files <- list.files("download_zenodo")
+
+zipF = sprintf("download_zenodo/%s",downloaded_files)
+
+# unzipping in the current folder
+unzip(zipF,exdir = "./")
+
+alarm_name = list.files(tools::file_path_sans_ext(downloaded_files))[1]
+
+path_to_file = paste0(tools::file_path_sans_ext(downloaded_files),"/",alarm_name,"/",alarm_name,".csv")
+
+df = read.csv(path_to_file)
+head(df)
+```
+
+
+We need to transform data first
+
+```{r}
+for (item in colnames(df)){
+  df[,item] = as.factor(df[,item])
+}
+```
 
 
 ```{r}
 data("alarm")
-alarm_df <- as.data.frame(na.omit(alarm))
+alarm_df <- as.data.frame(na.omit(df))
 
 p = length(names(alarm))
 n = dim(alarm)[1]

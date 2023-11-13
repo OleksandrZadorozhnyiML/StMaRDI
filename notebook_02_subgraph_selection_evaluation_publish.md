@@ -1,10 +1,6 @@
-Graph subset selection
-================
-David Reiffenscheidt and Oleksandr Zadorozhnyi
+***Setup of the problem***
 
-**Setup of the problem**
-
-Given a "large" graph *G* = (*V*,*E*), where *V* represents the set of
+Given a large graph *G* = (*V*,*E*), where *V* represents the set of
 nodes and *E* represents the set of edges, the goal is to select a
 subgraph *S* = (*V*<sub>*s*</sub>,*E*<sub>*s*</sub>) from G such that S
 is a meaningful and informative representation of the original graph
@@ -42,9 +38,104 @@ library("igraph")
     ## 
     ##     union
 
+Reading the files from Zenodo entry in the community
+
+``` r
+# necessary libraries to use for Zenodo REST-API
+library(litr)
+library(zen4R)
+
+zenodo <- ZenodoManager$new(
+  logger = "INFO" # use "DEBUG" to see detailed API operation logs, use NULL if you don't want logs at all
+)
+
+# downloading files using zenodo doi and reading from the file 
+rec1 <- zenodo$getRecordByDOI("10.5281/zenodo.7676616")
+```
+
+    ## [zen4R][INFO] ZenodoRequest - Fetching https://zenodo.org/api/records/?q=doi:%2210.5281/zenodo.7676616%22&size=10&page=1&all_versions=1 
+    ## [zen4R][INFO] ZenodoManager - Successfully fetched list of published records - page 1 
+    ## [zen4R][INFO] ZenodoManager - Successfully fetched list of published records! 
+    ## [zen4R][INFO] ZenodoManager - Successfully fetched record for DOI '10.5281/zenodo.7676616'!
+
+``` r
+files <- rec1$listFiles(pretty = TRUE)
+
+#create a folder where to download files from record
+dir.create("download_zenodo")
+```
+
+    ## Warning in dir.create("download_zenodo"): 'download_zenodo' already exists
+
+``` r
+#download files
+rec1$downloadFiles(path = "download_zenodo")
+```
+
+    ## [zen4R][INFO] ZenodoRecord - Download in sequential mode 
+    ## [zen4R][INFO] ZenodoRecord - Will download 1 file from record '7676616' (doi: '10.5281/zenodo.7676616') - total size: 2 MiB 
+    ## [zen4R][INFO] Downloading file 'bnlearn_data.zip' - size: 2 MiB
+    ## [zen4R][INFO] File downloaded at '/Users/admin/Work/MaRDITA3/Notebooks/StMaRDI/download_zenodo'.
+    ## [zen4R][INFO] ZenodoRecord - Verifying file integrity... 
+    ## [zen4R][INFO] File 'bnlearn_data.zip': integrity verified (md5sum: f123ea701227cfd8a43996183b7c5279)
+    ## [zen4R][INFO] ZenodoRecord - End of download
+
+``` r
+downloaded_files <- list.files("download_zenodo")
+
+zipF = sprintf("download_zenodo/%s",downloaded_files)
+
+# unzipping in the current folder
+unzip(zipF,exdir = "./")
+
+alarm_name = list.files(tools::file_path_sans_ext(downloaded_files))[1]
+
+path_to_file = paste0(tools::file_path_sans_ext(downloaded_files),"/",alarm_name,"/",alarm_name,".csv")
+
+df = read.csv(path_to_file)
+head(df)
+```
+
+    ##      CVP   PCWP  HIST    TPR     BP     CO HRBP HREK HRSA    PAP   SAO2   FIO2
+    ## 1 NORMAL NORMAL FALSE    LOW NORMAL   HIGH HIGH HIGH HIGH NORMAL NORMAL    LOW
+    ## 2 NORMAL NORMAL FALSE NORMAL    LOW    LOW HIGH HIGH HIGH NORMAL    LOW NORMAL
+    ## 3 NORMAL   HIGH FALSE NORMAL NORMAL   HIGH HIGH HIGH HIGH NORMAL    LOW NORMAL
+    ## 4 NORMAL NORMAL FALSE    LOW    LOW   HIGH HIGH HIGH HIGH NORMAL NORMAL NORMAL
+    ## 5 NORMAL NORMAL FALSE    LOW    LOW NORMAL HIGH HIGH HIGH NORMAL    LOW NORMAL
+    ## 6 NORMAL NORMAL FALSE    LOW NORMAL   HIGH HIGH HIGH HIGH NORMAL    LOW NORMAL
+    ##     PRSS ECO2 MINV    MVS   HYP   LVF   APL  ANES   PMB    INT  KINK  DISC
+    ## 1   HIGH ZERO HIGH NORMAL FALSE FALSE FALSE FALSE FALSE NORMAL FALSE  TRUE
+    ## 2   HIGH ZERO ZERO NORMAL FALSE FALSE FALSE FALSE FALSE NORMAL FALSE FALSE
+    ## 3 NORMAL ZERO ZERO NORMAL FALSE FALSE FALSE FALSE FALSE NORMAL FALSE FALSE
+    ## 4   HIGH ZERO ZERO NORMAL FALSE FALSE FALSE FALSE FALSE NORMAL FALSE FALSE
+    ## 5    LOW ZERO ZERO NORMAL FALSE FALSE FALSE FALSE FALSE NORMAL FALSE FALSE
+    ## 6   HIGH HIGH ZERO NORMAL FALSE FALSE FALSE  TRUE FALSE NORMAL FALSE FALSE
+    ##      LVV   STKV CCHL  ERLO   HR  ERCA   SHNT    PVS   ACO2 VALV VLNG VTUB
+    ## 1 NORMAL NORMAL HIGH FALSE HIGH FALSE NORMAL NORMAL NORMAL HIGH  LOW ZERO
+    ## 2 NORMAL    LOW HIGH FALSE HIGH FALSE NORMAL    LOW    LOW ZERO ZERO  LOW
+    ## 3 NORMAL NORMAL HIGH FALSE HIGH FALSE NORMAL    LOW    LOW ZERO ZERO  LOW
+    ## 4 NORMAL NORMAL HIGH FALSE HIGH FALSE NORMAL NORMAL    LOW ZERO ZERO  LOW
+    ## 5 NORMAL NORMAL HIGH FALSE HIGH FALSE NORMAL    LOW    LOW ZERO ZERO  LOW
+    ## 6 NORMAL NORMAL HIGH FALSE HIGH FALSE NORMAL    LOW    LOW ZERO ZERO  LOW
+    ##     VMCH
+    ## 1 NORMAL
+    ## 2 NORMAL
+    ## 3 NORMAL
+    ## 4 NORMAL
+    ## 5 NORMAL
+    ## 6 NORMAL
+
+We need to transform data first
+
+``` r
+for (item in colnames(df)){
+  df[,item] = as.factor(df[,item])
+}
+```
+
 ``` r
 data("alarm")
-alarm_df <- as.data.frame(na.omit(alarm))
+alarm_df <- as.data.frame(na.omit(df))
 
 p = length(names(alarm))
 n = dim(alarm)[1]
@@ -53,14 +144,14 @@ for (i in c(1:p)) {
 }
 ```
 
-Applying nonparanormal transformation to standardize the data.
+#### Applying nonparanormal transformation to standardize the data.
 
 ``` r
 library("huge")
 alarm_df <- huge.npn(alarm_df)
 ```
 
-Conducting the nonparanormal (npn) transformation via shrunkun ECDF....done.
+    ## Conducting the nonparanormal (npn) transformation via shrunkun ECDF....done.
 
 ``` r
 #####
@@ -79,7 +170,7 @@ qgraph(dag_alarm, legend.cex = 0.3,
        asize=2,edge.color="black", vsize= 4)
 ```
 
-![](notebook_02_subgraph_selection_evaluation_publish_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](notebook_02_subgraph_selection_evaluation_publish_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
 Selection of the set of nodes for subsetting
 
@@ -98,14 +189,14 @@ qgraph(procedure1, legend.cex = 0.3,
        asize=2,edge.color="black", vsize= 5)
 ```
 
-![](notebook_02_subgraph_selection_evaluation_publish_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](notebook_02_subgraph_selection_evaluation_publish_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 Second procedure selects the subgraph based on the following euristics.
 Given the ground truth DAG *G* = (*V*,*E*) and subset of vertices
 *V*<sub>*s*</sub> ⊂ *V* the goal is to find the corresponding set of
 vertices *E*<sub>*s*</sub> such that for
 (*V*<sub>*s*</sub>,*E*<sub>*s*</sub>) the structure of the distribution
-for *P*<sub>*V_*<sub>*s</sub></sub>* does not contradict the structure of the distribution
+for $ P\_{V_s}$ does not contradict the structure of the distribution
 *P*<sub>*V*</sub> so that we the task of structure estimation (and then
 benchmarking) on (*V*<sub>*s*</sub>,*E*<sub>*s*</sub>) can be done with
 a new ground truth.
@@ -153,7 +244,7 @@ qgraph(procedure2, legend.cex = 0.3,
        asize=2,edge.color="black", vsize= 5)
 ```
 
-![](notebook_02_subgraph_selection_evaluation_publish_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](notebook_02_subgraph_selection_evaluation_publish_files/figure-markdown_github/unnamed-chunk-9-1.png)
 Subsetting the dataset according to “subgraph_nodes” selection
 
 ``` r
@@ -217,7 +308,7 @@ plot(ig_tabu, main = "tabu", frame = T, layout=layout_with_fr, vertex.size=6,
      vertex.label.dist=0.5, vertex.color="red", edge.arrow.size=0.1, arrow.size=0.1, vertex.label.cex = 0.5)
 ```
 
-<img src="notebook_02_subgraph_selection_evaluation_publish_files/figure-markdown_github/unnamed-chunk-11-1.png" width="20%" />
+<img src="notebook_02_subgraph_selection_evaluation_publish_files/figure-markdown_github/unnamed-chunk-13-1.png" width="20%" />
 
 Selfdefined function for different measures
 
