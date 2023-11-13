@@ -264,8 +264,6 @@ qgraph(boot,nodeNames=Labels,legend.cex = 0.35,
 
 __References__ 
 
-[1] Beinlich I, Suermondt HJ, Chavez RM, Cooper GF (1989). "The ALARM Monitoring System: A Case Study with Two Probabilistic Inference Techniques for Belief Networks". Proceedings of the 2nd European Conference on Artificial Intelligence in Medicine, 247–256. 
-
 [1] Beinlich, I.A., Suermondt, H.J., Chavez, R.M., Cooper, G.F. (1989). The ALARM Monitoring System: A Case Study with two Probabilistic Inference Techniques for Belief Networks. In: Hunter, J., Cookson, J., Wyatt, J. (eds) AIME 89. Lecture Notes in Medical Informatics, vol 38. Springer, Berlin, Heidelberg. https://doi.org/10.1007/978-3-642-93437-7_28
 
 
