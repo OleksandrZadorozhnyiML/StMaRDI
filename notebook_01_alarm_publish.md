@@ -46,14 +46,14 @@ Loading the data from Zenodo collection/community:
     )
 
     # downloading files using zenodo doi and reading from the file 
-    rec1 <- zenodo$getRecordByDOI("10.5281/zenodo.7676616")
+    rec1 = zenodo$getRecordByDOI("10.5281/zenodo.7676616")
 
     ## [zen4R][INFO] ZenodoRequest - Fetching https://zenodo.org/api/records/?q=doi:%2210.5281/zenodo.7676616%22&size=10&page=1&all_versions=1 
     ## [zen4R][INFO] ZenodoManager - Successfully fetched list of published records - page 1 
     ## [zen4R][INFO] ZenodoManager - Successfully fetched list of published records! 
     ## [zen4R][INFO] ZenodoManager - Successfully fetched record for DOI '10.5281/zenodo.7676616'!
 
-    files <- rec1$listFiles(pretty = TRUE)
+    files = rec1$listFiles(pretty = TRUE)
 
     #create a folder where to download files from record
     dir.create("download_zenodo")
@@ -71,7 +71,7 @@ Loading the data from Zenodo collection/community:
     ## [zen4R][INFO] File 'bnlearn_data.zip': integrity verified (md5sum: f123ea701227cfd8a43996183b7c5279)
     ## [zen4R][INFO] ZenodoRecord - End of download
 
-    downloaded_files <- list.files("download_zenodo")
+    downloaded_files = list.files("download_zenodo")
 
     zipF = sprintf("download_zenodo/%s",downloaded_files)
 
