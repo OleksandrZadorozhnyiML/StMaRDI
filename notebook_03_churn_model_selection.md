@@ -92,7 +92,7 @@ head(df)
     ## 5       122      12.61      186.9         121         8.41              3    no
     ## 6       101      18.75      203.9         118         9.18              0    no
 
-### Here we taking a glimpse in the data
+__Here we taking a glimpse in the data__
 
 ``` r
 names(df)
@@ -115,7 +115,7 @@ df$voice.plan = ifelse(df$voice.plan == "yes", 1, 0)
 df$intl.plan =  ifelse(df$intl.plan == "yes", 1, 0)
 ```
 
-__How many loyal and churn clients are there in the dataset?__
+__How many loyal and churn clients are there in the dataset__?
 
 ``` r
 # Count the frequency of unique values of 
