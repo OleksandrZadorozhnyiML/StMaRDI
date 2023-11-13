@@ -2,7 +2,7 @@
 =============================
 Author: Oleksandr Zadorozhnyi
 
-***Setup of the problem ***
+__Setup of the problem__
 
 In the context of graphical modeling and structure learning from data we
 consider a simple task of determining the most appropriate graphical
