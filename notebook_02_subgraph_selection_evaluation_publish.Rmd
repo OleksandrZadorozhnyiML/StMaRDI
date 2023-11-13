@@ -3,12 +3,13 @@ title: "Subgraph selection and evaluation"
 author: David Reiffenscheidt and Oleksandr Zadorozhnyi
 date: "12/09/2023"
 output:
-  html_document
+  md_document:
+    variant: markdown_github
 
 ---
 
 
-__Setup of the problem__
+***Setup of the problem***
 
 Given a large graph $G = (V, E)$, where $V$ represents the set of nodes and $E$ represents the set of edges, the goal is to select a subgraph $S = (V_s, E_s)$ from G such that S is a meaningful and informative representation of the original graph $G$. The subgraph selection problem involves finding an optimal or near-optimal subgraph that satisfies certain criteria or objectives. 
 
@@ -35,7 +36,7 @@ for (i in c(1:p)) {
 }
 ```
 
-__Applying nonparanormal transformation to standardize the data__.
+#### Applying nonparanormal transformation to standardize the data.
 ```{r}
 library("huge")
 alarm_df <- huge.npn(alarm_df)
