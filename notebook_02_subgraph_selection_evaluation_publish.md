@@ -1,6 +1,10 @@
+Graph subset selection
+================
+David Reiffenscheidt and Oleksandr Zadorozhnyi
+
 **Setup of the problem**
 
-Given a large graph *G* = (*V*,*E*), where *V* represents the set of
+Given a "large" graph *G* = (*V*,*E*), where *V* represents the set of
 nodes and *E* represents the set of edges, the goal is to select a
 subgraph *S* = (*V*<sub>*s*</sub>,*E*<sub>*s*</sub>) from G such that S
 is a meaningful and informative representation of the original graph
@@ -101,7 +105,7 @@ Given the ground truth DAG *G* = (*V*,*E*) and subset of vertices
 *V*<sub>*s*</sub> ⊂ *V* the goal is to find the corresponding set of
 vertices *E*<sub>*s*</sub> such that for
 (*V*<sub>*s*</sub>,*E*<sub>*s*</sub>) the structure of the distribution
-for $ P\_{V_s}$ does not contradict the structure of the distribution
+for *P\_{V_s}* does not contradict the structure of the distribution
 *P*<sub>*V*</sub> so that we the task of structure estimation (and then
 benchmarking) on (*V*<sub>*s*</sub>,*E*<sub>*s*</sub>) can be done with
 a new ground truth.
