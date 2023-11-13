@@ -1,6 +1,6 @@
 ---
 title: "Subgraph selection and evaluation"
-author: David Reiffenscheidt
+author: David Reiffenscheidt and Oleksandr Zadorozhnyi
 date: "12/09/2023"
 output:
   html_document
