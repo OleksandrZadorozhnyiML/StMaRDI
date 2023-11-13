@@ -1,16 +1,16 @@
 ---
 title: "Churn analysis of the telekom data"
-author: Oleksandr Zadorozhnyi (extension of the dataset analysis https://mlcourse.ai/book/topic01/topic01_pandas_data_analysis.html to include causal inference methods and prediction importance)
+author: Oleksandr Zadorozhnyi (based on https://mlcourse.ai/book/topic01/topic01_pandas_data_analysis.html)
 date: "5/10/2023"
 output:
-  html_document
+  md_document:
+    variant: markdown_github
 
 ---
-
 ```{r setup, include=FALSE} 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 ```
-***Description of the dataset***
+__Description of the dataset__
 
 
 The churn dataset, as a data frame, contains 50000 rows (customers) and 20 columns (variables/features). The 20 variables are:
@@ -304,17 +304,7 @@ graph <- qgraph(Res_gs, legend.cex = 0.35,
 
 ```
 
-Metric evaluation for procedure 1
-```{r}
-features_excrt = c("intl.plan","intl.calls","customer.calls","voice.plan")
 
-
-```
-
-Metric evaluation for procedure 2
-```{r}
-
-```
 
 
 ***Refererences***
