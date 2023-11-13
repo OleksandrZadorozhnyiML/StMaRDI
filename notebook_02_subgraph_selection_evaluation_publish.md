@@ -1,4 +1,4 @@
-***Setup of the problem***
+**Setup of the problem**
 
 Given a large graph *G* = (*V*,*E*), where *V* represents the set of
 nodes and *E* represents the set of edges, the goal is to select a
@@ -49,14 +49,14 @@ for (i in c(1:p)) {
 }
 ```
 
-#### Applying nonparanormal transformation to standardize the data.
+Applying nonparanormal transformation to standardize the data.
 
 ``` r
 library("huge")
 alarm_df <- huge.npn(alarm_df)
 ```
 
-    ## Conducting the nonparanormal (npn) transformation via shrunkun ECDF....done.
+Conducting the nonparanormal (npn) transformation via shrunkun ECDF....done.
 
 ``` r
 #####
