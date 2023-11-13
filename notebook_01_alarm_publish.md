@@ -468,7 +468,7 @@ Nonparametrical bootstraping of the results of the model.
 \[1\] Beinlich I, Suermondt HJ, Chavez RM, Cooper GF (1989). “The ALARM
 Monitoring System: A Case Study with Two Probabilistic Inference
 Techniques for Belief Networks”. Proceedings of the 2nd European
-Conference on Artificial Intelligence in Medicine, 247–256.
+Conference on Artificial Intelligence in Medicine, 247–256.  https://doi.org/10.1007/978-3-642-93437-7_28 
 
 \[2\] Scutari, M. Learning Bayesian Networks with bnlearn R package.
 <https://arxiv.org/pdf/0908.3817.pdf>
