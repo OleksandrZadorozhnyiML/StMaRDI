@@ -1,8 +1,4 @@
-Alarm dataset
-================
-Oleksandr Zadorozhnyi
-
-**Setup of the problem**
+***Setup of the problem ***
 
 In the context of graphical modeling and structure learning from data we
 consider a simple task of determining the most appropriate graphical
@@ -12,24 +8,76 @@ modeling, and it involves identifying the conditional dependencies
 between variables in the dataset, which are represented by edges (arcs)
 in the Bayesian network.
 
-In this notebook we aim to perform a simple experiment to estimate the
+In this notebook we perform a simple experiment to estimate the
 structure between the covariates from the (subset) of dataset “alarm”.
 
 Loading the required libraries.
 
-``` r
-library(bnlearn)
-library(qgraph)
-library("huge")
-library(tidyverse)
-```
+    library(bnlearn)
+    library(qgraph)
+    library("huge")
+    library(ggplot2)
+    library(tidyverse)
 
-Loading the data from the package *“bnlearn”*
+    ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+    ## ✔ dplyr     1.1.3     ✔ readr     2.1.4
+    ## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+    ## ✔ lubridate 1.9.3     ✔ tibble    3.2.1
+    ## ✔ purrr     1.0.2     ✔ tidyr     1.3.0
+    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ✖ dplyr::filter() masks stats::filter()
+    ## ✖ dplyr::lag()    masks stats::lag()
+    ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 
-``` r
-data("alarm")
-head(alarm)
-```
+Loading the data from Zenodo collection/community:
+
+    # necessary libraries to use for Zenodo REST-API
+    library(litr)
+    library(zen4R)
+
+    zenodo <- ZenodoManager$new(
+      logger = "INFO" # use "DEBUG" to see detailed API operation logs, use NULL if you don't want logs at all
+    )
+
+    # downloading files using zenodo doi and reading from the file 
+    rec1 <- zenodo$getRecordByDOI("10.5281/zenodo.7676616")
+
+    ## [zen4R][INFO] ZenodoRequest - Fetching https://zenodo.org/api/records/?q=doi:%2210.5281/zenodo.7676616%22&size=10&page=1&all_versions=1 
+    ## [zen4R][INFO] ZenodoManager - Successfully fetched list of published records - page 1 
+    ## [zen4R][INFO] ZenodoManager - Successfully fetched list of published records! 
+    ## [zen4R][INFO] ZenodoManager - Successfully fetched record for DOI '10.5281/zenodo.7676616'!
+
+    files <- rec1$listFiles(pretty = TRUE)
+
+    #create a folder where to download files from record
+    dir.create("download_zenodo")
+
+    ## Warning in dir.create("download_zenodo"): 'download_zenodo' already exists
+
+    #download files
+    rec1$downloadFiles(path = "download_zenodo")
+
+    ## [zen4R][INFO] ZenodoRecord - Download in sequential mode 
+    ## [zen4R][INFO] ZenodoRecord - Will download 1 file from record '7676616' (doi: '10.5281/zenodo.7676616') - total size: 2 MiB 
+    ## [zen4R][INFO] Downloading file 'bnlearn_data.zip' - size: 2 MiB
+    ## [zen4R][INFO] File downloaded at '/Users/admin/Work/MaRDITA3/Notebooks/download_zenodo'.
+    ## [zen4R][INFO] ZenodoRecord - Verifying file integrity... 
+    ## [zen4R][INFO] File 'bnlearn_data.zip': integrity verified (md5sum: f123ea701227cfd8a43996183b7c5279)
+    ## [zen4R][INFO] ZenodoRecord - End of download
+
+    downloaded_files <- list.files("download_zenodo")
+
+    zipF = sprintf("download_zenodo/%s",downloaded_files)
+
+    # unzipping in the current folder
+    unzip(zipF,exdir = "./")
+
+    alarm_name = list.files(tools::file_path_sans_ext(downloaded_files))[1]
+
+    path_to_file = paste0(tools::file_path_sans_ext(downloaded_files),"/",alarm_name,"/",alarm_name,".csv")
+
+    df = read.csv(path_to_file)
+    head(df)
 
     ##      CVP   PCWP  HIST    TPR     BP     CO HRBP HREK HRSA    PAP   SAO2   FIO2
     ## 1 NORMAL NORMAL FALSE    LOW NORMAL   HIGH HIGH HIGH HIGH NORMAL NORMAL    LOW
@@ -60,12 +108,18 @@ head(alarm)
     ## 5 NORMAL
     ## 6 NORMAL
 
+We need to transform data first
+
+    for (item in colnames(df)){
+      df[,item] = as.factor(df[,item])
+    }
+
 **Description of the data**.
 
 The ALARM (“A Logical Alarm Reduction Mechanism”) is a Bayesian network
 designed to provide an alarm message system for patient monitoring.
 
-**The alarm data set contains the following 37 variables**:
+**The alarm data set contains the following 37 variables **:
 
     CVP (central venous pressure): a three-level factor with levels LOW, NORMAL and HIGH.
 
@@ -143,33 +197,27 @@ designed to provide an alarm message system for patient monitoring.
 
 Transforming the data to decode the categorical values as integers.
 
-``` r
-alarm_df <- as.data.frame(na.omit(alarm))
+    alarm_df <- as.data.frame(na.omit(df))
 
-p = length(names(alarm))
-n = dim(alarm)[1]
- for (i in c(1:p)) {
-     alarm_df[,i]<-as.numeric(alarm_df[,i])
-}
-```
+    p = length(names(df))
+    n = dim(df)[1]
+     for (i in c(1:p)) {
+         alarm_df[,i]<-as.numeric(alarm_df[,i])
+    }
 
 Applying nonparanormal transformation to standardize the data. More
 precisely it transforms the data using the truncated empirical
 probability distribution function and the final re-normalization.
 
-``` r
-selection <- c("TPR","PMB","VTUB","VLNG","CO")
+    selection <- c("TPR","PMB","VTUB","VLNG","CO")
 
 
-#alarm_df <- huge.npn(alarm_df)
-alarm_df_npn = huge.npn(alarm_df)
-```
+    #alarm_df <- huge.npn(alarm_df)
+    alarm_df_npn = huge.npn(alarm_df)
 
     ## Conducting the nonparanormal (npn) transformation via shrunkun ECDF....done.
 
-``` r
-head(alarm_df_npn)
-```
+    head(alarm_df_npn)
 
     ##         CVP       PCWP        HIST        TPR        BP         CO       HRBP
     ## 1 0.5073642  0.6137092 -0.09973971 -0.1768279 1.7013279 -0.8713625 -0.6646985
@@ -219,29 +267,32 @@ the train (structure estimation) and the dataset for inference (given
 the structure of the estimated graph) on the particular covariate.
 Correlation maps of the given sub-selection of variables is presented.
 
-![](notebook_01_alarm_publish_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+    ## Warning: The `x` argument of `as_tibble.matrix()` must have unique column names if
+    ## `.name_repair` is omitted as of tibble 2.0.0.
+    ## ℹ Using compatibility `.name_repair`.
+    ## This warning is displayed once every 8 hours.
+    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    ## generated.
+
+![](notebook_01_alarm_publish_files/figure-markdown_strict/unnamed-chunk-6-1.png)
 
 Defining the true network structure for the alarm dataset (see paper
 “Learning Bayesian Networks with the bnlearn R Package” by M.Scutari)
 
-``` r
-dag_alarm <- empty.graph(names(alarm))
-modelstring(dag_alarm) <- paste("[HIST|LVF][CVP|LVV][PCWP|LVV][HYP][LVV|HYP:LVF]","[LVF][STKV|HYP:LVF][ERLO][HRBP|ERLO:HR][HREK|ERCA:HR][ERCA][HRSA|ERCA:HR]","[ANES][APL][TPR|APL][ECO2|ACO2:VLNG][KINK][MINV|INT:VLNG][FIO2]","[PVS|FIO2:VALV][SAO2|PVS:SHNT][PAP|PMB][PMB][SHNT|INT:PMB][INT]","[PRSS|INT:KINK:VTUB][DISC][MVS][VMCH|MVS][VTUB|DISC:VMCH]","[VLNG|INT:KINK:VTUB][VALV|INT:VLNG][ACO2|VALV][CCHL|ACO2:ANES:SAO2:TPR]","[HR|CCHL][CO|HR:STKV][BP|CO:TPR]", sep = "")
-qgraph(dag_alarm)
-```
+    dag_alarm <- empty.graph(names(alarm))
+    modelstring(dag_alarm) <- paste("[HIST|LVF][CVP|LVV][PCWP|LVV][HYP][LVV|HYP:LVF]","[LVF][STKV|HYP:LVF][ERLO][HRBP|ERLO:HR][HREK|ERCA:HR][ERCA][HRSA|ERCA:HR]","[ANES][APL][TPR|APL][ECO2|ACO2:VLNG][KINK][MINV|INT:VLNG][FIO2]","[PVS|FIO2:VALV][SAO2|PVS:SHNT][PAP|PMB][PMB][SHNT|INT:PMB][INT]","[PRSS|INT:KINK:VTUB][DISC][MVS][VMCH|MVS][VTUB|DISC:VMCH]","[VLNG|INT:KINK:VTUB][VALV|INT:VLNG][ACO2|VALV][CCHL|ACO2:ANES:SAO2:TPR]","[HR|CCHL][CO|HR:STKV][BP|CO:TPR]", sep = "")
+    qgraph(dag_alarm)
 
-![](notebook_01_alarm_publish_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](notebook_01_alarm_publish_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
 Selection of the specific covariates to perform the structure estimation
 and the inference in the model task.
 
-``` r
-alarm_dfSubset <-as.data.frame(alarm_df[,selection])
+    alarm_dfSubset <-as.data.frame(alarm_df[,selection])
 
-alarm_df_str_est = alarm_dfSubset[str_set,]
-alarm_df_fit = alarm_dfSubset[est_set,]
-head(alarm_df_str_est)
-```
+    alarm_df_str_est = alarm_dfSubset[str_set,]
+    alarm_df_fit = alarm_dfSubset[est_set,]
+    head(alarm_df_str_est)
 
     ##   TPR PMB VTUB VLNG CO
     ## 1   2   1    4    2  1
@@ -253,11 +304,9 @@ head(alarm_df_str_est)
 
 Applying the algorithm pc.stable to the dataset alarm
 
-``` r
-Res<-pc.stable(alarm_df_str_est)
+    Res<-pc.stable(alarm_df_str_est)
 
-bnlearn:::print.bn(Res)
-```
+    bnlearn:::print.bn(Res)
 
     ## 
     ##   Bayesian network learned via Constraint-based methods
@@ -280,46 +329,40 @@ bnlearn:::print.bn(Res)
 Applying a set of constraint-based algorithms to estimate the DAG
 structure between the selected variables.
 
-``` r
-Res_stable=pc.stable(alarm_df_str_est)
+    Res_stable=pc.stable(alarm_df_str_est)
 
-Res_iamb=iamb(alarm_df_str_est)
+    Res_iamb=iamb(alarm_df_str_est)
 
-Res_gs=gs(alarm_df_str_est)
+    Res_gs=gs(alarm_df_str_est)
 
-Res_fiamb=fast.iamb(alarm_df_str_est)
+    Res_fiamb=fast.iamb(alarm_df_str_est)
 
-Res_mmpc=mmpc(alarm_df_str_est)
-```
+    Res_mmpc=mmpc(alarm_df_str_est)
 
 Visualizing the estimated graph with PC-stable algorithm with respect to
 the chosen variables. As we see the pc.stable algorithm returns a CPDAG.
 For the inference purposes we manually set the (undirected) edges to
 specific values.
 
-``` r
-Labels <- c(
-  "Total peripheral resistance",
-  "Pulmonary embolus",
-  "Ventilation tube",
-  "Lung ventilation",
-  "Cardiac output"
-)
+    Labels <- c(
+      "Total peripheral resistance",
+      "Pulmonary embolus",
+      "Ventilation tube",
+      "Lung ventilation",
+      "Cardiac output"
+    )
 
-qgraph(Res, nodeNames = Labels, legend.cex = 0.35)
-```
+    qgraph(Res, nodeNames = Labels, legend.cex = 0.35)
 
-![](notebook_01_alarm_publish_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](notebook_01_alarm_publish_files/figure-markdown_strict/unnamed-chunk-11-1.png)
 
-``` r
-# black magic to make it a proper DAG
+    # black magic to make it a proper DAG
 
-Res <- set.arc(Res, from = "PMB",to="CO")
-Res <- set.arc(Res, from = "TPR",to="CO")
-Res = set.arc(Res,from = "VLNG",to="VTUB")
+    Res <- set.arc(Res, from = "PMB",to="CO")
+    Res <- set.arc(Res, from = "TPR",to="CO")
+    Res = set.arc(Res,from = "VLNG",to="VTUB")
 
-Res
-```
+    Res
 
     ## 
     ##   Bayesian network learned via Constraint-based methods
@@ -339,18 +382,13 @@ Res
     ##   alpha threshold:                       0.05 
     ##   tests used in the learning procedure:  28
 
-``` r
-graph <- qgraph(Res, nodeNames = Labels, legend.cex = 0.35,
-                asize=5,edge.color="black")
-```
+    graph <- qgraph(Res)
 
-![](notebook_01_alarm_publish_files/figure-gfm/unnamed-chunk-10-2.png)<!-- -->
+![](notebook_01_alarm_publish_files/figure-markdown_strict/unnamed-chunk-11-2.png)
 Fitting the model to the dataset.
 
-``` r
-fit <- bn.fit(Res, alarm_df_fit)
-fit$CO
-```
+    fit <- bn.fit(Res, alarm_df_fit)
+    fit$CO
 
     ## 
     ##   Parameters of node CO (Gaussian distribution)
@@ -361,9 +399,7 @@ fit$CO
     ##  2.61248092  -0.39384628   0.01495855  -0.02626200  
     ## Standard deviation of the residuals: 0.7893206
 
-``` r
-fit$VTUB
-```
+    fit$VTUB
 
     ## 
     ##   Parameters of node VTUB (Gaussian distribution)
@@ -374,9 +410,7 @@ fit$VTUB
     ##   3.2383682   -0.2568879  
     ## Standard deviation of the residuals: 0.8209566
 
-``` r
-fit$TPR
-```
+    fit$TPR
 
     ## 
     ##   Parameters of node TPR (Gaussian distribution)
@@ -389,52 +423,46 @@ fit$TPR
 
 Nonparametrical bootstraping of the results of the model.
 
-``` r
-set.seed(1)
+    set.seed(1)
 
-boot <- boot.strength(as.data.frame(alarm_dfSubset), R = 100, algorithm = "pc.stable")
+    boot <- boot.strength(as.data.frame(alarm_dfSubset), R = 100, algorithm = "pc.stable")
 
-boot
-```
+    boot
 
     ##    from   to strength direction
-    ## 1   TPR  PMB     0.69 0.2318841
+    ## 1   TPR  PMB     0.70 0.2071429
     ## 2   TPR VTUB     0.05 0.1000000
     ## 3   TPR VLNG     0.00 0.0000000
-    ## 4   TPR   CO     1.00 0.4750000
-    ## 5   PMB  TPR     0.69 0.7681159
+    ## 4   TPR   CO     1.00 0.4600000
+    ## 5   PMB  TPR     0.70 0.7928571
     ## 6   PMB VTUB     0.03 0.5000000
-    ## 7   PMB VLNG     0.10 0.5000000
+    ## 7   PMB VLNG     0.08 0.3750000
     ## 8   PMB   CO     0.01 1.0000000
     ## 9  VTUB  TPR     0.05 0.9000000
     ## 10 VTUB  PMB     0.03 0.5000000
-    ## 11 VTUB VLNG     1.00 0.7200000
-    ## 12 VTUB   CO     0.03 0.5000000
+    ## 11 VTUB VLNG     1.00 0.7100000
+    ## 12 VTUB   CO     0.04 0.6250000
     ## 13 VLNG  TPR     0.00 0.0000000
-    ## 14 VLNG  PMB     0.10 0.5000000
-    ## 15 VLNG VTUB     1.00 0.2800000
-    ## 16 VLNG   CO     1.00 0.4600000
-    ## 17   CO  TPR     1.00 0.5250000
+    ## 14 VLNG  PMB     0.08 0.6250000
+    ## 15 VLNG VTUB     1.00 0.2900000
+    ## 16 VLNG   CO     1.00 0.4800000
+    ## 17   CO  TPR     1.00 0.5400000
     ## 18   CO  PMB     0.01 0.0000000
-    ## 19   CO VTUB     0.03 0.5000000
-    ## 20   CO VLNG     1.00 0.5400000
+    ## 19   CO VTUB     0.04 0.3750000
+    ## 20   CO VLNG     1.00 0.5200000
 
-``` r
-qgraph(boot,nodeNames=Labels,legend.cex = 0.35,
-       edge.labels=TRUE,layout=graph$layout,asize=5,
-       edge.color="black")
-```
+    qgraph(boot,nodeNames=Labels,legend.cex = 0.35,
+           edge.labels=TRUE,layout=graph$layout,asize=5,
+           edge.color="black")
 
-![](notebook_01_alarm_publish_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](notebook_01_alarm_publish_files/figure-markdown_strict/unnamed-chunk-13-1.png)
 
-**References**
+***References ***
 
-\[1\] Beinlich, I.A., Suermondt, H.J., Chavez, R.M., Cooper, G.F.
-(1989). The ALARM Monitoring System: A Case Study with two Probabilistic
-Inference Techniques for Belief Networks. In: Hunter, J., Cookson, J.,
-Wyatt, J. (eds) AIME 89. Lecture Notes in Medical Informatics, vol 38.
-Springer, Berlin, Heidelberg.
-<https://doi.org/10.1007/978-3-642-93437-7_28>
+\[1\] Beinlich I, Suermondt HJ, Chavez RM, Cooper GF (1989). “The ALARM
+Monitoring System: A Case Study with Two Probabilistic Inference
+Techniques for Belief Networks”. Proceedings of the 2nd European
+Conference on Artificial Intelligence in Medicine, 247–256.
 
 \[2\] Scutari, M. Learning Bayesian Networks with bnlearn R package.
 <https://arxiv.org/pdf/0908.3817.pdf>

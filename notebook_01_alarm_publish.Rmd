@@ -2,19 +2,13 @@
 title: "Alarm dataset"
 author: "Oleksandr Zadorozhnyi"
 output:
-  github_document: default
+  md_document
 ---
-
-```{r setup, include=FALSE} 
-knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
-```
-
-
-__Setup of the problem__
+***Setup of the problem ***
 
 In the context of graphical modeling and structure learning from data we consider a simple task of determining the most appropriate graphical structure for a Bayesian network model (DAG estimation) based on the available data. This problem is fundamental in probabilistic graphical modeling, and it involves identifying the conditional dependencies between variables in the dataset, which are represented by edges (arcs) in the Bayesian network.
 
-In this notebook we aim to perform a simple experiment to estimate the structure between the covariates from the (subset) of dataset "alarm". 
+In this notebook we perform a simple experiment to estimate the structure between the covariates from the (subset) of dataset "alarm". 
 
 Loading the required libraries. 
 
@@ -22,19 +16,56 @@ Loading the required libraries.
 library(bnlearn)
 library(qgraph)
 library("huge")
+library(ggplot2)
 library(tidyverse)
 ```
-Loading the data from the package *"bnlearn"*
+Loading the data from Zenodo collection/community: 
+
 ```{r}
-data("alarm")
-head(alarm)
+# necessary libraries to use for Zenodo REST-API
+library(litr)
+library(zen4R)
+
+zenodo <- ZenodoManager$new(
+  logger = "INFO" # use "DEBUG" to see detailed API operation logs, use NULL if you don't want logs at all
+)
+
+# downloading files using zenodo doi and reading from the file 
+rec1 <- zenodo$getRecordByDOI("10.5281/zenodo.7676616")
+files <- rec1$listFiles(pretty = TRUE)
+
+#create a folder where to download files from record
+dir.create("download_zenodo")
+
+#download files
+rec1$downloadFiles(path = "download_zenodo")
+downloaded_files <- list.files("download_zenodo")
+
+zipF = sprintf("download_zenodo/%s",downloaded_files)
+
+# unzipping in the current folder
+unzip(zipF,exdir = "./")
+
+alarm_name = list.files(tools::file_path_sans_ext(downloaded_files))[1]
+
+path_to_file = paste0(tools::file_path_sans_ext(downloaded_files),"/",alarm_name,"/",alarm_name,".csv")
+
+df = read.csv(path_to_file)
+head(df)
+```
+We need to transform data first
+
+```{r}
+for (item in colnames(df)){
+  df[,item] = as.factor(df[,item])
+}
 ```
 
-__Description of the data__.
+**Description of the data**.
 
 The ALARM ("A Logical Alarm Reduction Mechanism") is a Bayesian network designed to provide an alarm message system for patient monitoring. 
 
-__The alarm data set contains the following 37 variables__:
+**The alarm data set contains the following 37 variables **:
 
     CVP (central venous pressure): a three-level factor with levels LOW, NORMAL and HIGH.
 
@@ -114,10 +145,10 @@ __The alarm data set contains the following 37 variables__:
 Transforming the data to decode the categorical values as integers. 
 
 ```{r}
-alarm_df <- as.data.frame(na.omit(alarm))
+alarm_df <- as.data.frame(na.omit(df))
 
-p = length(names(alarm))
-n = dim(alarm)[1]
+p = length(names(df))
+n = dim(df)[1]
  for (i in c(1:p)) {
      alarm_df[,i]<-as.numeric(alarm_df[,i])
 }
@@ -234,8 +265,7 @@ Res <- set.arc(Res, from = "TPR",to="CO")
 Res = set.arc(Res,from = "VLNG",to="VTUB")
 
 Res
-graph <- qgraph(Res, nodeNames = Labels, legend.cex = 0.35,
-                asize=5,edge.color="black")
+graph <- qgraph(Res)
 ```
 Fitting the model to the dataset. 
 ```{r}
@@ -262,10 +292,9 @@ qgraph(boot,nodeNames=Labels,legend.cex = 0.35,
 ```
 
 
-__References__ 
+***References *** 
 
-[1] Beinlich, I.A., Suermondt, H.J., Chavez, R.M., Cooper, G.F. (1989). The ALARM Monitoring System: A Case Study with two Probabilistic Inference Techniques for Belief Networks. In: Hunter, J., Cookson, J., Wyatt, J. (eds) AIME 89. Lecture Notes in Medical Informatics, vol 38. Springer, Berlin, Heidelberg. https://doi.org/10.1007/978-3-642-93437-7_28
-
+[1] Beinlich I, Suermondt HJ, Chavez RM, Cooper GF (1989). "The ALARM Monitoring System: A Case Study with Two Probabilistic Inference Techniques for Belief Networks". Proceedings of the 2nd European Conference on Artificial Intelligence in Medicine, 247–256. 
 
 [2] Scutari, M. Learning Bayesian Networks with bnlearn R package. https://arxiv.org/pdf/0908.3817.pdf
 
