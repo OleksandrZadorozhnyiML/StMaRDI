@@ -4,7 +4,7 @@ author: "Oleksandr Zadorozhnyi"
 output:
   md_document
 ---
-***Setup of the problem ***
+** Setup of the problem **
 
 In the context of graphical modeling and structure learning from data we consider a simple task of determining the most appropriate graphical structure for a Bayesian network model (DAG estimation) based on the available data. This problem is fundamental in probabilistic graphical modeling, and it involves identifying the conditional dependencies between variables in the dataset, which are represented by edges (arcs) in the Bayesian network.
 
