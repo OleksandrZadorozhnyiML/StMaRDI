@@ -1,6 +1,8 @@
 
-=============================
-Author: Oleksandr Zadorozhnyi
+
+__Author__: Oleksandr Zadorozhnyi
+
+==================================
 
 __Setup of the problem__
 
