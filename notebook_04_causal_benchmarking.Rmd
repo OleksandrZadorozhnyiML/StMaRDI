@@ -1,5 +1,5 @@
 ---
-title: "Causal analysis based on the benchmarking of the Tubingen datasets"
+title: "Causal analysis based on the benchmarking of the Tuebingen datasets"
 author: Oleksandr Zadorozhnyi (author thanks to Daniela Schkoda for providing the code for the analysis of the ground truth model in the tubingen dataset)
 date: "16/10/2023"
 output:
@@ -15,11 +15,11 @@ The Tuebingen cause-effect dataset contains the 108 datasets, every with 2 varia
 
  the data represented here is a growing database with different data for testing causal detection algorithms. The goal here is to distinguish between cause and effect. We searched for data sets with known ground truth. However, we do not guarantee that all provided ground truths are correct. The datafiles are .txt-files and contain two variables, one is the cause and the other the effect. For every example there exists a description file where you can find the ground truth and how the data was derived.
 
-Note that not always the first column is the cause and the second the effect. This is indicated in a meta-data file. There is also a weighting factor suggested for some pairs which are very similar if you want to calculate the overall performance.
+Note that not always the first column is the cause and the second the effect. This is indicated in a meta-data file. 
 
 
 ***Setup of the problem***
-We have 89 datasets with variables $Var1, Var2$. The goal is to establish 
+We have 89 datasets with variables $Var1, Var2$. The goal is to use HSIC test to establish (empirically) the relationship between the effect and cause in the datasets while using non-linear testing mechanism. 
 ```{r}
 ### loading packages
 library("liver")
