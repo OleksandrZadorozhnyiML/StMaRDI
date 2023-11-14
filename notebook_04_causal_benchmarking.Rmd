@@ -3,15 +3,15 @@ title: "Causal analysis based on the benchmarking of the Tubingen datasets"
 author: Oleksandr Zadorozhnyi (author thanks to Daniela Schkoda for providing the code for the analysis of the ground truth model in the tubingen dataset)
 date: "16/10/2023"
 output:
-  html_document
+  md_document
 
 ---
 ```{r setup, include=FALSE} 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 ```
-***Description of the dataset***
+**Description of the dataset**
 
-The Tubingen cause-effect dataset contains the 108 datasets, every with 2 variables. The description of the data is the following:
+The Tuebingen cause-effect dataset contains the 108 datasets, every with 2 variables. The description of the data is the following:
 
  the data represented here is a growing database with different data for testing causal detection algorithms. The goal here is to distinguish between cause and effect. We searched for data sets with known ground truth. However, we do not guarantee that all provided ground truths are correct. The datafiles are .txt-files and contain two variables, one is the cause and the other the effect. For every example there exists a description file where you can find the ground truth and how the data was derived.
 
@@ -31,7 +31,7 @@ library("dplyr")
 list_of_datasets = read.csv("whitelist.csv")
 
 ```
-### Loading the Tubingen datasets
+Loading the Tubingen datasets
 ```{r}
 whitelist = as.list(list_of_datasets)
 head(list_of_datasets)
@@ -39,7 +39,7 @@ head(list_of_datasets)
 selected = list_of_datasets[sample(nrow(list_of_datasets),5),]
 print(selected)
 ```
-### Here we taking a glimpse in the tubingen data
+Here we taking a glimpse in the Tuebingen dataset collection
 
 ```{r}
 # here we extract the selected datasets to perform benchmarking
