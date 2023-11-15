@@ -200,7 +200,7 @@ mean(df[df$churn==0,features]$day.mins)
     ## [1] 175.7466
 
 ``` r
-__What is the maximum length of the loyal clients who do not use the international plan?__
+What is the maximum length of the loyal clients who do not use the international plan?
 
 max(df[(df$churn==0) &(df$intl.plan == 0),]$intl.mins)
 ```
