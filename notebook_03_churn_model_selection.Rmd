@@ -1,5 +1,5 @@
 ---
-title: "Churn analysis of the telekom data"
+title: "Churn customer analysis of the telekom data"
 author: Oleksandr Zadorozhnyi (based on https://mlcourse.ai/book/topic01/topic01_pandas_data_analysis.html)
 date: "5/10/2023"
 output:
