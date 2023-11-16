@@ -31,7 +31,7 @@ library("dplyr")
 list_of_datasets = read.csv("whitelist.csv")
 ```
 
-### Loading the Tuebingen datasets
+__Loading the Tuebingen datasets__
 
 ``` r
 whitelist = as.list(list_of_datasets)
@@ -54,7 +54,7 @@ print(selected)
 
     ## [1] 34 50 61 64  9
 
-### Here we taking a glimpse in the tubingen data
+__Here we taking a glimpse in the tubingen data__
 
 ``` r
 # here we extract the selected datasets to perform benchmarking
@@ -63,7 +63,7 @@ sel_to_str = as.character(selected)
 elem_len= nchar(sel_to_str)
 ```
 
-# Transcribing the lengths of the array to form the file names
+__Transcribing the lengths of the array to form the file names__
 
 ``` r
 result = vector(mode="character", length=5)
@@ -166,7 +166,7 @@ for (i in setdiff(whitelist$whitelist,drop_f)) {
 }
 ```
 
-***Refererences***
+__Refererences__
 
 \[1\] Pfister, N, and Peter, J,. Independence Testing via Hilbert
 Schmidt Independence Criterion. <https://doi.org/10.1111/rssb.12235>
