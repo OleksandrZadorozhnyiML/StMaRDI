@@ -1,3 +1,6 @@
+Author: David Reiffenscheidt and Oleksandr Zadorozhnyi
+
+==================================
 ***Setup of the problem***
 
 Given a large graph *G* = (*V*,*E*), where *V* represents the set of
