@@ -18,7 +18,7 @@ factor suggested for some pairs which are very similar if you want to
 calculate the overall performance.
 
 ***Setup of the problem*** We have 89 datasets with variables
-*V**a**r*1, *V**a**r*2. The goal is to establish
+*V**a**r*1, *V**a**r*2. The goal is to establish cause-effect relationships between 2 variables using the data. 
 
 ``` r
 ### loading packages
