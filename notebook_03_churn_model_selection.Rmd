@@ -1,11 +1,8 @@
 ---
 title: "Churn customer analysis of the telekom data"
 author: Oleksandr Zadorozhnyi (based on https://mlcourse.ai/book/topic01/topic01_pandas_data_analysis.html)
-date: "5/10/2023"
-output:
-  md_document:
-    variant: markdown_github
-
+output: html_document
+ # md_document
 ---
 ```{r setup, include=FALSE} 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 

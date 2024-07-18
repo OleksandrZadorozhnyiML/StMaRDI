@@ -2,9 +2,9 @@
 title: "Subgraph selection and evaluation"
 author: David Reiffenscheidt and Oleksandr Zadorozhnyi
 date: "12/09/2023"
-output:
-  md_document:
-    variant: markdown_github
+output: html_document
+ # md_document:
+  #  variant: markdown_github
 
 ---
 
@@ -27,7 +27,6 @@ Reading the files from Zenodo entry in the community
 
 ```{r}
 # necessary libraries to use for Zenodo REST-API
-library(litr)
 library(zen4R)
 
 zenodo <- ZenodoManager$new(

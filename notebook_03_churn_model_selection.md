@@ -1,4 +1,4 @@
-***Description of the dataset***
+**Description of the dataset**
 
 The churn dataset, as a data frame, contains 50000 rows (customers) and
 20 columns (variables/features). The 20 variables are:
@@ -51,24 +51,20 @@ to identify the reasons which may be the causes for a user of telecom
 company to become churn and use them to predict the level of churn for a
 customer while intervening on some of the parameters in the model.
 
-``` r
-### loading packages
-library("liver")
-library("qgraph")
-library("igraph")
-library("bnlearn")
-library("dplyr")
+    ### loading packages
+    library("liver")
+    library("qgraph")
+    library("igraph")
+    library("bnlearn")
+    library("dplyr")
 
-df = read.csv("churn.csv")
-```
+    df = read.csv("churn.csv")
 
-__Loading the churn dataset__
+### Loading the churn dataset
 
-``` r
-#df = churn
-#write.csv(churn,"churn.csv",sep = "\t",row.names = FALSE)
-head(df)
-```
+    #df = churn
+    #write.csv(churn,"churn.csv",sep = "\t",row.names = FALSE)
+    head(df)
 
     ##   state     area.code account.length voice.plan voice.messages intl.plan
     ## 1    KS area_code_415            128        yes             25        no
@@ -92,11 +88,9 @@ head(df)
     ## 5       122      12.61      186.9         121         8.41              3    no
     ## 6       101      18.75      203.9         118         9.18              0    no
 
-__Here we taking a glimpse in the data__
+### Here we taking a glimpse in the data
 
-``` r
-names(df)
-```
+    names(df)
 
     ##  [1] "state"          "area.code"      "account.length" "voice.plan"    
     ##  [5] "voice.messages" "intl.plan"      "intl.mins"      "intl.calls"    
@@ -104,39 +98,33 @@ names(df)
     ## [13] "eve.mins"       "eve.calls"      "eve.charge"     "night.mins"    
     ## [17] "night.calls"    "night.charge"   "customer.calls" "churn"
 
-``` r
-# transforming the "churns" to the numerical values
-df$churn = ifelse(df$churn == "yes", 1, 0)
+    # transforming the "churns" to the numerical values
+    df$churn = ifelse(df$churn == "yes", 1, 0)
 
-# transforming the intl.plan and voice.plan to the numerical values as well
-# The goal of this part is to mutate the features voice.plan and intl.plan to the binary values
+    # transforming the intl.plan and voice.plan to the numerical values as well
+    # The goal of this part is to mutate the features voice.plan and intl.plan to the binary values
 
-df$voice.plan = ifelse(df$voice.plan == "yes", 1, 0)
-df$intl.plan =  ifelse(df$intl.plan == "yes", 1, 0)
-```
+    df$voice.plan = ifelse(df$voice.plan == "yes", 1, 0)
+    df$intl.plan =  ifelse(df$intl.plan == "yes", 1, 0)
 
-__How many loyal and churn clients are there in the dataset__?
+# How many loyal and churn clients are there in the dataset?
 
-``` r
-# Count the frequency of unique values of 
-value_counts <- df %>%
-  count(churn)
+    # Count the frequency of unique values of 
+    value_counts <- df %>%
+      count(churn)
 
-# Print the number of churn/loyal clients
-print(value_counts)
-```
+    # Print the number of churn/loyal clients
+    print(value_counts)
 
     ##   churn    n
     ## 1     0 4293
     ## 2     1  707
 
-``` r
-# Cutting unnesessary text from a string and displaying the distribution of clients according to area
-area_str = df$area.code
-new_str = gsub('area_code_','',area_str)
-df$area.code = as.numeric(new_str)
-head(df)
-```
+    # Cutting unnesessary text from a string and displaying the distribution of clients according to area
+    area_str = df$area.code
+    new_str = gsub('area_code_','',area_str)
+    df$area.code = as.numeric(new_str)
+    head(df)
 
     ##   state area.code account.length voice.plan voice.messages intl.plan intl.mins
     ## 1    KS       415            128          1             25         0      10.0
@@ -160,12 +148,10 @@ head(df)
     ## 5      12.61      186.9         121         8.41              3     0
     ## 6      18.75      203.9         118         9.18              0     0
 
-``` r
-value_counts_area = df %>%
-  count(area.code)
-value_counts_area[2]=value_counts_area[2]/nrow(df)
-print(value_counts_area)
-```
+    value_counts_area = df %>%
+      count(area.code)
+    value_counts_area[2]=value_counts_area[2]/nrow(df)
+    print(value_counts_area)
 
     ##   area.code      n
     ## 1       408 0.2518
@@ -176,50 +162,42 @@ We are considering two sets of features: the ones with the numerical
 attributes only (set “features”) and only with additional categorical
 features “voice.plan”,“intl.plan” (set “features2”)
 
-``` r
-# choosing numerical features
+    # choosing numerical features
 
-features = c("voice.messages","intl.mins","intl.calls","intl.charge","day.mins", "day.calls", "day.charge","eve.mins","eve.calls", "eve.charge","night.mins","night.calls","night.charge","customer.calls","churn")
+    features = c("voice.messages","intl.mins","intl.calls","intl.charge","day.mins", "day.calls", "day.charge","eve.mins","eve.calls", "eve.charge","night.mins","night.calls","night.charge","customer.calls","churn")
 
-features2 = c("voice.plan","voice.messages","intl.plan","intl.mins","intl.calls","intl.charge","day.mins", "day.calls", "day.charge","eve.mins","eve.calls", "eve.charge","night.mins","night.calls","night.charge","customer.calls","churn")
+    features2 = c("voice.plan","voice.messages","intl.plan","intl.mins","intl.calls","intl.charge","day.mins", "day.calls", "day.charge","eve.mins","eve.calls", "eve.charge","night.mins","night.calls","night.charge","customer.calls","churn")
 
-for (i in features2){
-  df[,i] = as.numeric(df[,i])
-}
-# What is the average number of minutes churn/loyal clients talk in a day ? 
+    for (i in features2){
+      df[,i] = as.numeric(df[,i])
+    }
+    # What is the average number of minutes churn/loyal clients talk in a day ? 
 
-mean(df[df$churn==1,features]$day.mins)
-```
+    mean(df[df$churn==1,features]$day.mins)
 
     ## [1] 207.8706
 
-``` r
-mean(df[df$churn==0,features]$day.mins)
-```
+    mean(df[df$churn==0,features]$day.mins)
 
     ## [1] 175.7466
 
-``` r
-What is the maximum length of the loyal clients who do not use the international plan?
+    # What is the maximum length of the loyal clients who do not use the international plan ?
 
-max(df[(df$churn==0) &(df$intl.plan == 0),]$intl.mins)
-```
+    max(df[(df$churn==0) &(df$intl.plan == 0),]$intl.mins)
 
     ## [1] 19.7
 
-__Creating some pivot tables for specific values of customer calls__
+\###Creating some pivot tables for specific values of customer calls’
 
-``` r
-cols = c("area.code","day.calls", "eve.calls", "night.calls")
-cols_to_mean = c("day.calls", "eve.calls", "night.calls")
-df_sb = df[,cols]
+    cols = c("area.code","day.calls", "eve.calls", "night.calls")
+    cols_to_mean = c("day.calls", "eve.calls", "night.calls")
+    df_sb = df[,cols]
 
-# Group by the 'Area code' column and calculate the mean for the selected columns
-result = aggregate(. ~ area.code, data = df_sb, FUN = mean)[,cols_to_mean]
-rownames(result) = aggregate(.~ area.code, data = df_sb, FUN = mean)[,"area.code"]
-# Display the first 10 rows
-head(result, 10)
-```
+    # Group by the 'Area code' column and calculate the mean for the selected columns
+    result = aggregate(. ~ area.code, data = df_sb, FUN = mean)[,cols_to_mean]
+    rownames(result) = aggregate(.~ area.code, data = df_sb, FUN = mean)[,"area.code"]
+    # Display the first 10 rows
+    head(result, 10)
 
     ##     day.calls eve.calls night.calls
     ## 408   99.5560  100.5107    99.32566
@@ -233,101 +211,89 @@ different assumptions each model puts on the data.
 
 Performing the estimation of correlations between features.
 
-``` r
-library(ggplot2)
-library(tidyverse)
-dat = as.matrix(cor(df[,features2]))
-rownames(dat) = NULL
-colnames(dat) = NULL
+    library(ggplot2)
+    library(tidyverse)
+    dat = as.matrix(cor(df[,features2]))
+    rownames(dat) = NULL
+    colnames(dat) = NULL
 
 
-## convert to tibble, add row identifier, and shape "long"
-dat2 <-
-  dat %>%
-  as_tibble() %>%
-  rownames_to_column("Var1") %>%
-  pivot_longer(-Var1, names_to = "Var2", values_to = "value") %>%
-  mutate(
-    Var1 = factor(Var1, levels = 1:17),
-    Var2 = factor(gsub("V", "", Var2), levels = 1:17)
-  )
-#> Warning: The `x` argument of `as_tibble.matrix()` must have unique column names if
-#> `.name_repair` is omitted as of tibble 2.0.0.
-#> ℹ Using compatibility `.name_repair`.
+    ## convert to tibble, add row identifier, and shape "long"
+    dat2 <-
+      dat %>%
+      as_tibble() %>%
+      rownames_to_column("Var1") %>%
+      pivot_longer(-Var1, names_to = "Var2", values_to = "value") %>%
+      mutate(
+        Var1 = factor(Var1, levels = 1:17),
+        Var2 = factor(gsub("V", "", Var2), levels = 1:17)
+      )
+    #> Warning: The `x` argument of `as_tibble.matrix()` must have unique column names if
+    #> `.name_repair` is omitted as of tibble 2.0.0.
+    #> ℹ Using compatibility `.name_repair`.
 
-ggplot(dat2, aes(Var1, Var2)) +
-  geom_tile(aes(fill = value)) +
-  geom_text(aes(label = round(value, 2)),size=1.75) +
-  scale_fill_gradient(low = "blue", high = "red")+
-  scale_x_discrete(name=c(""),breaks= 1:17,labels=features2) + 
-  scale_y_discrete(name=c(""),breaks=1:17,labels =features2) +
-  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1))
-```
+    ggplot(dat2, aes(Var1, Var2)) +
+      geom_tile(aes(fill = value)) +
+      geom_text(aes(label = round(value, 2)),size=1.75) +
+      scale_fill_gradient(low = "blue", high = "red")+
+      scale_x_discrete(name=c(""),breaks= 1:17,labels=features2) + 
+      scale_y_discrete(name=c(""),breaks=1:17,labels =features2) +
+      theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1))
 
-![](notebook_03_churn_model_selection_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](notebook_03_churn_model_selection_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
-``` r
-ggsave("churn_corr.png")
-```
+    ggsave("churn_corr.png")
 
-__Specifying the train and test subsets of the data__
+# Specifying the train and test subsets of the data
 
-``` r
-n = nrow(df)
-train_test_ratio = 2/3
-index_set = c(1:n)
+    n = nrow(df)
+    train_test_ratio = 2/3
+    index_set = c(1:n)
 
-train_set = c(1:round(train_test_ratio*n))
-test_set = setdiff(index_set, train_set)
+    train_set = c(1:round(train_test_ratio*n))
+    test_set = setdiff(index_set, train_set)
 
-df_train = df[train_set,]
-df_test = df[test_set,]
-```
+    df_train = df[train_set,]
+    df_test = df[test_set,]
 
 First attempts to prognose the level of churn. Looking on the
 international plan we try to observe what is the churn rate when a
 client has/does not have international plan.
 
-``` r
-cross_tab = table(df_train$churn, df_train$intl.plan)
-#addmargins(cross_tab)
-rownames(cross_tab) = c("not churn","churn")
-colnames(cross_tab) = c("no intl.plan", "intl.plan")
-colours=c("red","blue")
-barplot(cross_tab,ylab = "Users",beside = TRUE,col = colours)
-box()
-legend('topright',fill=colours,legend=c('Not churn','Churn'))
-```
+    cross_tab = table(df_train$churn, df_train$intl.plan)
+    #addmargins(cross_tab)
+    rownames(cross_tab) = c("not churn","churn")
+    colnames(cross_tab) = c("no intl.plan", "intl.plan")
+    colours=c("red","blue")
+    barplot(cross_tab,ylab = "Users",beside = TRUE,col = colours)
+    box()
+    legend('topright',fill=colours,legend=c('Not churn','Churn'))
 
-![](notebook_03_churn_model_selection_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](notebook_03_churn_model_selection_files/figure-markdown_strict/unnamed-chunk-9-1.png)
 We observe that the users on international plan is more likely to become
 churn, then the ones who does not have international plan.
 
 Let us analyse the churn rate in relation to the number of customer
 calls to the call-center.
 
-``` r
-cross_tab_calls = table(df_train$churn, df_train$customer.calls)
-#addmargins(cross_tab)
-rownames(cross_tab_calls) = c("not churn","churn")
-#colnames(cross_tab_calls) = c("no intl.plan", "intl.plan")
-colours=c("red","blue")
-barplot(cross_tab_calls,ylab = "Users",beside = TRUE,col = colours)
-box()
-legend('topright',fill=colours,legend=c('Not churn','Churn'))
-```
+    cross_tab_calls = table(df_train$churn, df_train$customer.calls)
+    #addmargins(cross_tab)
+    rownames(cross_tab_calls) = c("not churn","churn")
+    #colnames(cross_tab_calls) = c("no intl.plan", "intl.plan")
+    colours=c("red","blue")
+    barplot(cross_tab_calls,ylab = "Users",beside = TRUE,col = colours)
+    box()
+    legend('topright',fill=colours,legend=c('Not churn','Churn'))
 
-![](notebook_03_churn_model_selection_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](notebook_03_churn_model_selection_files/figure-markdown_strict/unnamed-chunk-10-1.png)
 Observe that when the number of customer calls is larger then 3 the
 churn rate increases.
 
-``` r
-###### Prepare the data to apply bnlearn functions/prodecures
+    ###### Prepare the data to apply bnlearn functions/prodecures
 
-Res<-pc.stable(df_train[,features2])
+    Res<-pc.stable(df_train[,features2])
 
-bnlearn:::print.bn(Res)
-```
+    bnlearn:::print.bn(Res)
 
     ## 
     ##   Bayesian network learned via Constraint-based methods
@@ -347,33 +313,27 @@ bnlearn:::print.bn(Res)
     ##   alpha threshold:                       0.05 
     ##   tests used in the learning procedure:  364
 
-``` r
-graph <- qgraph(Res, legend.cex = 0.35,
-                asize=5,edge.color="black")
-```
+    graph <- qgraph(Res, legend.cex = 0.35,
+                    asize=5,edge.color="black")
 
-![](notebook_03_churn_model_selection_files/figure-markdown_github/unnamed-chunk-11-1.png)
+![](notebook_03_churn_model_selection_files/figure-markdown_strict/unnamed-chunk-11-1.png)
 
 Model selection using the Markov blanket (Markov boundary) for the
 target variable *y* = *c**h**u**r**n* and using some information
 criteria. Using the logistic regression model to train to predict the
 probability of client to be churn.
 
-``` r
-library("caret")
-model_all = glm(churn ~., data = df_train[,features2], family = binomial(link = "logit"))
+    library("caret")
+    model_all = glm(churn ~., data = df_train[,features2], family = binomial(link = "logit"))
 
-predictions = predict(model_all, newdata = df_test[,features2], type = "response")
+    predictions = predict(model_all, newdata = df_test[,features2], type = "response")
 
-acc = sum(round(predictions)==df_test$churn)/nrow(df_test)
-sprintf("Accuracy of churn detection using all the variables %f", acc)
-```
+    acc = sum(round(predictions)==df_test$churn)/nrow(df_test)
+    sprintf("Accuracy of churn detection using all the variables %f", acc)
 
     ## [1] "Accuracy of churn detection using all the variables 0.870426"
 
-``` r
-confusionMatrix(factor(round(predictions)), factor(df_test$churn), positive = as.character(1))
-```
+    confusionMatrix(factor(round(predictions)), factor(df_test$churn), positive = as.character(1))
 
     ## Confusion Matrix and Statistics
     ## 
@@ -403,59 +363,49 @@ confusionMatrix(factor(round(predictions)), factor(df_test$churn), positive = as
     ##        'Positive' Class : 1               
     ## 
 
-``` r
-f_imp = coef(model_all)
-print(f_imp)
-```
+    f_imp = coef(model_all)
+    print(f_imp)
 
     ##    (Intercept)     voice.plan voice.messages      intl.plan      intl.mins 
     ##  -8.5681586249  -2.0261650055   0.0359681034   2.0456557319  -4.3477435131 
     ##     intl.calls    intl.charge       day.mins      day.calls     day.charge 
-    ##  -0.0926430079  16.4267556472  -0.2254922664   0.0032319470   1.4026839656 
+    ##  -0.0926430079  16.4267556472  -0.2254922664   0.0032319470   1.4026839654 
     ##       eve.mins      eve.calls     eve.charge     night.mins    night.calls 
-    ##   0.7965398106   0.0010951844  -9.2858598435  -0.1243780097   0.0006676366 
+    ##   0.7965398106   0.0010951844  -9.2858598434  -0.1243780097   0.0006676366 
     ##   night.charge customer.calls 
     ##   2.8457687821   0.5138614391
 
-``` r
-model_sbset = glm(churn ~ voice.plan+intl.plan+intl.calls+customer.calls,data = df_train[,features2], family = binomial(link = "logit") )
+    model_sbset = glm(churn ~ voice.plan+intl.plan+intl.calls+customer.calls,data = df_train[,features2], family = binomial(link = "logit") )
 
-predictions_sbset = predict(model_sbset, newdata = df_test[,features2], type = "response")
-acc_sbst = sum(round(predictions_sbset)==df_test$churn)/nrow(df_test)
-sprintf("Accuracy of churn detection using subset the variables %f", acc_sbst)
-```
+    predictions_sbset = predict(model_sbset, newdata = df_test[,features2], type = "response")
+    acc_sbst = sum(round(predictions_sbset)==df_test$churn)/nrow(df_test)
+    sprintf("Accuracy of churn detection using subset the variables %f", acc_sbst)
 
     ## [1] "Accuracy of churn detection using subset the variables 0.869226"
 
-``` r
-#### Prediction using the model selection procedure  
-```
+    #### Prediction using the model selection procedure  
 
 Visualize resulting feature importance in the logistic regression
 
-``` r
-importance_data <- data.frame(Feature = names(f_imp), Importance = f_imp)
+    importance_data <- data.frame(Feature = names(f_imp), Importance = f_imp)
 
-# Create a bar plot of feature importance
-ggplot(importance_data, aes(x = Importance, y = Feature)) +
-  geom_bar(stat = "identity", fill = "blue") +
-  labs(title = "Feature Importance in Logistic Regression",
-       x = "Importance",
-       y = "Feature") +
-  theme(axis.text.y = element_text(angle = 0, hjust = 1))  # Rotate x-axis labels for better readability
-```
+    # Create a bar plot of feature importance
+    ggplot(importance_data, aes(x = Importance, y = Feature)) +
+      geom_bar(stat = "identity", fill = "blue") +
+      labs(title = "Feature Importance in Logistic Regression",
+           x = "Importance",
+           y = "Feature") +
+      theme(axis.text.y = element_text(angle = 0, hjust = 1))  # Rotate x-axis labels for better readability
 
-<img src="notebook_03_churn_model_selection_files/figure-markdown_github/unnamed-chunk-13-1.png" width="20%" />
+<img src="notebook_03_churn_model_selection_files/figure-markdown_strict/unnamed-chunk-13-1.png" width="20%" />
 
 Different procedure to estimate the Markov blanket is given below. For
 example we consider the algorithm IAMB \[2\] and the Grow-Shrink (GS)
 \[3,4\] algorithm.
 
-``` r
-Res_iamb<-iamb(df_train[,features2])
+    Res_iamb<-iamb(df_train[,features2])
 
-bnlearn:::print.bn(Res_iamb)
-```
+    bnlearn:::print.bn(Res_iamb)
 
     ## 
     ##   Bayesian network learned via Constraint-based methods
@@ -475,15 +425,13 @@ bnlearn:::print.bn(Res_iamb)
     ##   alpha threshold:                       0.05 
     ##   tests used in the learning procedure:  720
 
-``` r
-graph <- qgraph(Res_iamb, legend.cex = 0.35,
-                asize=5,edge.color="black")
+    graph <- qgraph(Res_iamb, legend.cex = 0.35,
+                    asize=5,edge.color="black")
 
 
-Res_gs<-gs(df_train[,features2])
+    Res_gs<-gs(df_train[,features2])
 
-bnlearn:::print.bn(Res_gs)
-```
+    bnlearn:::print.bn(Res_gs)
 
     ## 
     ##   Bayesian network learned via Constraint-based methods
@@ -503,12 +451,10 @@ bnlearn:::print.bn(Res_gs)
     ##   alpha threshold:                       0.05 
     ##   tests used in the learning procedure:  537
 
-``` r
-graph <- qgraph(Res_gs, legend.cex = 0.35,
-                asize=5,edge.color="black")
-```
+    graph <- qgraph(Res_gs, legend.cex = 0.35,
+                    asize=5,edge.color="black")
 
-![](notebook_03_churn_model_selection_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](notebook_03_churn_model_selection_files/figure-markdown_strict/unnamed-chunk-14-1.png)
 
 ***Refererences***
 

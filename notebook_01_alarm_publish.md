@@ -1,10 +1,4 @@
-
-
-__Author__: Oleksandr Zadorozhnyi
-
-==================================
-
-__Setup of the problem__
+\*\* Setup of the problem \*\*
 
 In the context of graphical modeling and structure learning from data we
 consider a simple task of determining the most appropriate graphical
@@ -26,10 +20,10 @@ Loading the required libraries.
     library(tidyverse)
 
     ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-    ## ✔ dplyr     1.1.3     ✔ readr     2.1.4
-    ## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+    ## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+    ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
     ## ✔ lubridate 1.9.3     ✔ tibble    3.2.1
-    ## ✔ purrr     1.0.2     ✔ tidyr     1.3.0
+    ## ✔ purrr     1.0.2     ✔ tidyr     1.3.1
     ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
@@ -38,7 +32,6 @@ Loading the required libraries.
 Loading the data from Zenodo collection/community:
 
     # necessary libraries to use for Zenodo REST-API
-    library(litr)
     library(zen4R)
 
     zenodo <- ZenodoManager$new(
@@ -46,32 +39,59 @@ Loading the data from Zenodo collection/community:
     )
 
     # downloading files using zenodo doi and reading from the file 
-    rec1 = zenodo$getRecordByDOI("10.5281/zenodo.7676616")
+    rec1 <- zenodo$getRecordByDOI("10.5281/zenodo.7676616")
 
-    ## [zen4R][INFO] ZenodoRequest - Fetching https://zenodo.org/api/records/?q=doi:%2210.5281/zenodo.7676616%22&size=10&page=1&all_versions=1 
-    ## [zen4R][INFO] ZenodoManager - Successfully fetched list of published records - page 1 
-    ## [zen4R][INFO] ZenodoManager - Successfully fetched list of published records! 
+    ## [zen4R][INFO] ZenodoRequest - Fetching https://zenodo.org/api/records?q=doi:%2210.5281/zenodo.7676616%22&size=10&page=1&allversions=1
+
+    ## ℹ Successfully fetched list of published records - page 1
+
+    ## [zen4R][INFO] ZenodoManager - Successfully fetched list of published records - page 1
+
+    ## ✔ Successfully fetched list of published records!
+
+    ## [zen4R][INFO] ZenodoManager - Successfully fetched list of published records!
+
+    ## ✔ Successfully fetched record for DOI '10.5281/zenodo.7676616'!
+
     ## [zen4R][INFO] ZenodoManager - Successfully fetched record for DOI '10.5281/zenodo.7676616'!
 
-    files = rec1$listFiles(pretty = TRUE)
+    files <- rec1$listFiles(pretty = TRUE)
 
     #create a folder where to download files from record
     dir.create("download_zenodo")
 
-    ## Warning in dir.create("download_zenodo"): 'download_zenodo' already exists
-
     #download files
     rec1$downloadFiles(path = "download_zenodo")
 
-    ## [zen4R][INFO] ZenodoRecord - Download in sequential mode 
-    ## [zen4R][INFO] ZenodoRecord - Will download 1 file from record '7676616' (doi: '10.5281/zenodo.7676616') - total size: 2 MiB 
+    ## ℹ Download in sequential mode
+
+    ## [zen4R][INFO] ZenodoRecord - Download in sequential mode
+
+    ## ℹ Will download 1 file from record '7676616' (doi: '10.5281/zenodo.7676616') - total size: 2 MiB
+
+    ## [zen4R][INFO] ZenodoRecord - Will download 1 file from record '7676616' (doi: '10.5281/zenodo.7676616') - total size: 2 MiB
+
+    ## ℹ Downloading file 'bnlearn_data.zip' - size: 2 MiB
+
     ## [zen4R][INFO] Downloading file 'bnlearn_data.zip' - size: 2 MiB
-    ## [zen4R][INFO] File downloaded at '/Users/admin/Work/MaRDITA3/Notebooks/download_zenodo'.
-    ## [zen4R][INFO] ZenodoRecord - Verifying file integrity... 
+
+    ## ℹ File downloaded at '/Users/admin/Work/MaRDITA3/ntb_zenodo/StMaRDI/download_zenodo'.
+
+    ## [zen4R][INFO] File downloaded at '/Users/admin/Work/MaRDITA3/ntb_zenodo/StMaRDI/download_zenodo'.
+
+    ## ℹ Verifying file integrity...
+
+    ## [zen4R][INFO] ZenodoRecord - Verifying file integrity...
+
+    ## ℹ File 'bnlearn_data.zip': integrity verified (md5sum: f123ea701227cfd8a43996183b7c5279)
+
     ## [zen4R][INFO] File 'bnlearn_data.zip': integrity verified (md5sum: f123ea701227cfd8a43996183b7c5279)
+
+    ## ✔ End of download
+
     ## [zen4R][INFO] ZenodoRecord - End of download
 
-    downloaded_files = list.files("download_zenodo")
+    downloaded_files <- list.files("download_zenodo")
 
     zipF = sprintf("download_zenodo/%s",downloaded_files)
 
@@ -436,26 +456,26 @@ Nonparametrical bootstraping of the results of the model.
     boot
 
     ##    from   to strength direction
-    ## 1   TPR  PMB     0.70 0.2071429
+    ## 1   TPR  PMB     0.69 0.2318841
     ## 2   TPR VTUB     0.05 0.1000000
     ## 3   TPR VLNG     0.00 0.0000000
-    ## 4   TPR   CO     1.00 0.4600000
-    ## 5   PMB  TPR     0.70 0.7928571
+    ## 4   TPR   CO     1.00 0.4750000
+    ## 5   PMB  TPR     0.69 0.7681159
     ## 6   PMB VTUB     0.03 0.5000000
-    ## 7   PMB VLNG     0.08 0.3750000
+    ## 7   PMB VLNG     0.10 0.5000000
     ## 8   PMB   CO     0.01 1.0000000
     ## 9  VTUB  TPR     0.05 0.9000000
     ## 10 VTUB  PMB     0.03 0.5000000
-    ## 11 VTUB VLNG     1.00 0.7100000
-    ## 12 VTUB   CO     0.04 0.6250000
+    ## 11 VTUB VLNG     1.00 0.7200000
+    ## 12 VTUB   CO     0.03 0.5000000
     ## 13 VLNG  TPR     0.00 0.0000000
-    ## 14 VLNG  PMB     0.08 0.6250000
-    ## 15 VLNG VTUB     1.00 0.2900000
-    ## 16 VLNG   CO     1.00 0.4800000
-    ## 17   CO  TPR     1.00 0.5400000
+    ## 14 VLNG  PMB     0.10 0.5000000
+    ## 15 VLNG VTUB     1.00 0.2800000
+    ## 16 VLNG   CO     1.00 0.4600000
+    ## 17   CO  TPR     1.00 0.5250000
     ## 18   CO  PMB     0.01 0.0000000
-    ## 19   CO VTUB     0.04 0.3750000
-    ## 20   CO VLNG     1.00 0.5200000
+    ## 19   CO VTUB     0.03 0.5000000
+    ## 20   CO VLNG     1.00 0.5400000
 
     qgraph(boot,nodeNames=Labels,legend.cex = 0.35,
            edge.labels=TRUE,layout=graph$layout,asize=5,
@@ -468,7 +488,8 @@ Nonparametrical bootstraping of the results of the model.
 \[1\] Beinlich I, Suermondt HJ, Chavez RM, Cooper GF (1989). “The ALARM
 Monitoring System: A Case Study with Two Probabilistic Inference
 Techniques for Belief Networks”. Proceedings of the 2nd European
-Conference on Artificial Intelligence in Medicine, 247–256.  https://doi.org/10.1007/978-3-642-93437-7_28 
+Conference on Artificial Intelligence in Medicine, 247–256.
+<https://doi.org/10.1007/978-3-642-93437-7_28>
 
 \[2\] Scutari, M. Learning Bayesian Networks with bnlearn R package.
 <https://arxiv.org/pdf/0908.3817.pdf>

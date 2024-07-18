@@ -1,13 +1,8 @@
-Author: David Reiffenscheidt and Oleksandr Zadorozhnyi
-
-==================================
-
-
 ***Setup of the problem***
 
-Given a large graph *G* = (*V*,*E*), where *V* represents the set of
+Given a large graph *G* = (*V*, *E*), where *V* represents the set of
 nodes and *E* represents the set of edges, the goal is to select a
-subgraph *S* = (*V*<sub>*s*</sub>,*E*<sub>*s*</sub>) from G such that S
+subgraph *S* = (*V*<sub>*s*</sub>, *E*<sub>*s*</sub>) from G such that S
 is a meaningful and informative representation of the original graph
 *G*. The subgraph selection problem involves finding an optimal or
 near-optimal subgraph that satisfies certain criteria or objectives.
@@ -47,7 +42,6 @@ Reading the files from Zenodo entry in the community
 
 ``` r
 # necessary libraries to use for Zenodo REST-API
-library(litr)
 library(zen4R)
 
 zenodo <- ZenodoManager$new(
@@ -58,9 +52,18 @@ zenodo <- ZenodoManager$new(
 rec1 <- zenodo$getRecordByDOI("10.5281/zenodo.7676616")
 ```
 
-    ## [zen4R][INFO] ZenodoRequest - Fetching https://zenodo.org/api/records/?q=doi:%2210.5281/zenodo.7676616%22&size=10&page=1&all_versions=1 
-    ## [zen4R][INFO] ZenodoManager - Successfully fetched list of published records - page 1 
-    ## [zen4R][INFO] ZenodoManager - Successfully fetched list of published records! 
+    ## [zen4R][INFO] ZenodoRequest - Fetching https://zenodo.org/api/records?q=doi:%2210.5281/zenodo.7676616%22&size=10&page=1&allversions=1
+
+    ## ℹ Successfully fetched list of published records - page 1
+
+    ## [zen4R][INFO] ZenodoManager - Successfully fetched list of published records - page 1
+
+    ## ✔ Successfully fetched list of published records!
+
+    ## [zen4R][INFO] ZenodoManager - Successfully fetched list of published records!
+
+    ## ✔ Successfully fetched record for DOI '10.5281/zenodo.7676616'!
+
     ## [zen4R][INFO] ZenodoManager - Successfully fetched record for DOI '10.5281/zenodo.7676616'!
 
 ``` r
@@ -77,12 +80,32 @@ dir.create("download_zenodo")
 rec1$downloadFiles(path = "download_zenodo")
 ```
 
-    ## [zen4R][INFO] ZenodoRecord - Download in sequential mode 
-    ## [zen4R][INFO] ZenodoRecord - Will download 1 file from record '7676616' (doi: '10.5281/zenodo.7676616') - total size: 2 MiB 
+    ## ℹ Download in sequential mode
+
+    ## [zen4R][INFO] ZenodoRecord - Download in sequential mode
+
+    ## ℹ Will download 1 file from record '7676616' (doi: '10.5281/zenodo.7676616') - total size: 2 MiB
+
+    ## [zen4R][INFO] ZenodoRecord - Will download 1 file from record '7676616' (doi: '10.5281/zenodo.7676616') - total size: 2 MiB
+
+    ## ℹ Downloading file 'bnlearn_data.zip' - size: 2 MiB
+
     ## [zen4R][INFO] Downloading file 'bnlearn_data.zip' - size: 2 MiB
-    ## [zen4R][INFO] File downloaded at '/Users/admin/Work/MaRDITA3/Notebooks/StMaRDI/download_zenodo'.
-    ## [zen4R][INFO] ZenodoRecord - Verifying file integrity... 
+
+    ## ℹ File downloaded at '/Users/admin/Work/MaRDITA3/ntb_zenodo/StMaRDI/download_zenodo'.
+
+    ## [zen4R][INFO] File downloaded at '/Users/admin/Work/MaRDITA3/ntb_zenodo/StMaRDI/download_zenodo'.
+
+    ## ℹ Verifying file integrity...
+
+    ## [zen4R][INFO] ZenodoRecord - Verifying file integrity...
+
+    ## ℹ File 'bnlearn_data.zip': integrity verified (md5sum: f123ea701227cfd8a43996183b7c5279)
+
     ## [zen4R][INFO] File 'bnlearn_data.zip': integrity verified (md5sum: f123ea701227cfd8a43996183b7c5279)
+
+    ## ✔ End of download
+
     ## [zen4R][INFO] ZenodoRecord - End of download
 
 ``` r
@@ -197,16 +220,16 @@ qgraph(procedure1, legend.cex = 0.3,
 ![](notebook_02_subgraph_selection_evaluation_publish_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 Second procedure selects the subgraph based on the following euristics.
-Given the ground truth DAG *G* = (*V*,*E*) and subset of vertices
+Given the ground truth DAG *G* = (*V*, *E*) and subset of vertices
 *V*<sub>*s*</sub> ⊂ *V* the goal is to find the corresponding set of
 vertices *E*<sub>*s*</sub> such that for
-(*V*<sub>*s*</sub>,*E*<sub>*s*</sub>) the structure of the distribution
+(*V*<sub>*s*</sub>, *E*<sub>*s*</sub>) the structure of the distribution
 for $ P\_{V_s}$ does not contradict the structure of the distribution
 *P*<sub>*V*</sub> so that we the task of structure estimation (and then
-benchmarking) on (*V*<sub>*s*</sub>,*E*<sub>*s*</sub>) can be done with
+benchmarking) on (*V*<sub>*s*</sub>, *E*<sub>*s*</sub>) can be done with
 a new ground truth.
 
-Let *G* = (*V*,*E*) be the original directed acyclic graph, and
+Let *G* = (*V*, *E*) be the original directed acyclic graph, and
 *P*<sub>*V*</sub> is the joint distribution of random variables from
 *V*. We take two and check whether these vertices are *d*−connected
 given all others in *V*<sub>*s*</sub>. If they are not *d*-connected,
