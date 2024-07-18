@@ -1,7 +1,7 @@
 # StMaRDI
 This is a repository to store notebooks of statistical analysis in graphical modelling and causal inference (MaRDI Project, TA3)
 
-Here we provide the short description of the available notebooks. 
+Here we provide the short description of the available notebooks and their possible usage. 
 
 __Notebook_01__ - introduction to the problem of graphical modelling and causal inference. Implementation of the algorithms available in the package __bnlearn__ on the dataset __alarm__ which were collected from Zenodo repository.  
 
