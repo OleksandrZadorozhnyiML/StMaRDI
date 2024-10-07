@@ -165,9 +165,11 @@ Res_tabu = tabu(alarm_dfSubset)
 ```
 
 
-Visualize resulting subgraph
-```{r, fig.show="hold", out.width="20%"}
-par(mfrow=c(3,4))
+Visualize resulting subgraph in the images below:
+
+```{r, fig.show="hold", out.width="120%"}
+par(mfrow=c(2, 4), mar=c(1, 1, 1, 1), oma=c(2, 2, 2, 2))
+
 
 ig_proc1 <- as.igraph(procedure1)
 ig_proc2 <- as.igraph(procedure2)
@@ -180,24 +182,25 @@ ig_mmpc <- as.igraph(Res_mmpc)
 ig_hc <- as.igraph(Res_hc)
 ig_tabu <- as.igraph(Res_tabu)
 
-plot(ig_proc1, main = "proc1", frame = T, layout=layout_with_fr, vertex.size=6,
-     vertex.label.dist=0.5, vertex.color="red", edge.arrow.size=0.1, arrow.size=0.1, vertex.label.cex = 0.5)
-plot(ig_proc2, main = "proc2", frame = T, layout=layout_with_fr, vertex.size=6,
-     vertex.label.dist=0.5, vertex.color="red", edge.arrow.size=0.1, arrow.size=0.1, vertex.label.cex = 0.5)
-plot(ig_pc, main = "pc", frame = T, layout=layout_with_fr, vertex.size=6,
-     vertex.label.dist=0.5, vertex.color="red", edge.arrow.size=0.1, arrow.size=0.1, vertex.label.cex = 0.5)
-plot(ig_iamb, main = "iamb", frame = T, layout=layout_with_fr, vertex.size=6,
-     vertex.label.dist=0.5, vertex.color="red", edge.arrow.size=0.1, arrow.size=0.1, vertex.label.cex = 0.5)
-plot(ig_gs, main = "gs", frame = T, layout=layout_with_fr, vertex.size=6,
-     vertex.label.dist=0.5, vertex.color="red", edge.arrow.size=0.1, arrow.size=0.1, vertex.label.cex = 0.5)
-plot(ig_fiamb, main = "fiamb", frame = T, layout=layout_with_fr, vertex.size=6,
-     vertex.label.dist=0.5, vertex.color="red", edge.arrow.size=0.1, arrow.size=0.1, vertex.label.cex = 0.5)
-plot(ig_mmpc, main = "mmpc", frame = T, layout=layout_with_fr, vertex.size=6,
-     vertex.label.dist=0.5, vertex.color="red", edge.arrow.size=0.1, arrow.size=0.1, vertex.label.cex = 0.5)
-plot(ig_hc, main = "hc", frame = T, layout=layout_with_fr, vertex.size=6,
-     vertex.label.dist=0.5, vertex.color="red", edge.arrow.size=0.1, arrow.size=0.1, vertex.label.cex = 0.5)
-plot(ig_tabu, main = "tabu", frame = T, layout=layout_with_fr, vertex.size=6,
-     vertex.label.dist=0.5, vertex.color="red", edge.arrow.size=0.1, arrow.size=0.1, vertex.label.cex = 0.5)
+plot(ig_proc1, main = "proc1", frame = T, layout=layout_with_fr, vertex.size=18,
+     vertex.label.dist=4, vertex.color="red", edge.arrow.size=0.4, vertex.label.cex=1)
+plot(ig_proc2, main = "proc2", frame = T, layout=layout_with_fr, vertex.size=18,
+     vertex.label.dist=4, vertex.color="red", edge.arrow.size=0.4, vertex.label.cex=1)
+plot(ig_pc, main = "pc", frame = T, layout=layout_with_fr, vertex.size=18,
+     vertex.label.dist=4, vertex.color="red", edge.arrow.size=0.4, vertex.label.cex=1)
+plot(ig_iamb, main = "iamb", frame = T, layout=layout_with_fr, vertex.size=18,
+     vertex.label.dist=4, vertex.color="red", edge.arrow.size=0.4, vertex.label.cex=1)
+plot(ig_gs, main = "gs", frame = T, layout=layout_with_fr, vertex.size=18,
+     vertex.label.dist=4, vertex.color="red", edge.arrow.size=0.4, vertex.label.cex=1)
+plot(ig_fiamb, main = "fiamb", frame = T, layout=layout_with_fr, vertex.size=18,
+     vertex.label.dist=4, vertex.color="red", edge.arrow.size=0.4, vertex.label.cex=1)
+plot(ig_mmpc, main = "mmpc", frame = T, layout=layout_with_fr, vertex.size=18,
+     vertex.label.dist=4, vertex.color="red", edge.arrow.size=0.4, vertex.label.cex=1)
+plot(ig_hc, main = "hc", frame = T, layout=layout_with_fr, vertex.size=18,
+     vertex.label.dist=4, vertex.color="red", edge.arrow.size=0.4, vertex.label.cex=1)
+plot(ig_tabu, main = "tabu", frame = T, layout=layout_with_fr, vertex.size=18,
+     vertex.label.dist=4, vertex.color="red", edge.arrow.size=0.4, vertex.label.cex=1)
+
 ```
 
 
