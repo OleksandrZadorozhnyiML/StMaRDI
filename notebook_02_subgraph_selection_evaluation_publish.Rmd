@@ -150,29 +150,82 @@ alarm_dfSubset <-as.data.frame(alarm_df[,subgraph_nodes])
 
 
 ```{r}
+# procedure 3: forming the PAG from the observable and latent variables
+# begin with a random test 
 library(pcalg)
 library(igraph)
 
 # Define the true DAG using adjacency matrix (X1, X2, X3, X4 = observed, H1, H2 = latent)
-adjMatrix <- matrix(c(0, 1, 0, 0, 1, 0,  # X1 -> X2
-                      0, 0, 1, 0, 0, 1,  # X2 -> X3, X2 -> H2
-                      0, 0, 0, 1, 0, 0,  # X3 -> X4
-                      0, 0, 0, 0, 0, 0,  # X4 (no outgoing edge)
-                      0, 0, 0, 0, 0, 1,  # H1 -> H2
-                      0, 0, 0, 0, 0, 0   # H2 (no outgoing edge)
-), byrow = TRUE, nrow = 6, dimnames = list(c("X1", "X2", "X3", "X4", "H1", "H2"), 
-                                           c("X1", "X2", "X3", "X4", "H1", "H2")))
+
+
+
+#adjMatrix <- matrix(c(0, 1, 0, 0, 1, 0,  # X1 -> X2
+#                      0, 0, 1, 0, 0, 1,  # X2 -> X3, X2 -> H2
+#                      0, 0, 0, 1, 0, 0,  # X3 -> X4
+#                      0, 0, 0, 0, 0, 0,  # X4 (no outgoing edge)
+#                      0, 0, 0, 0, 0, 1,  # H1 -> H2
+#.                     0, 0, 0, 0, 0, 0   # H2 (no outgoing edge)
+#), byrow = TRUE, nrow = 6, dimnames = list(c("X1", "X2", "X3", "X4", "H1", "H2"), 
+#                                           c("X1", "X2", "X3", "X4", "H1", "H2")))
+
+
+V <- c("Ghost", "Max", "Urs", "Anna", "Eva")  # Original node names
+edL <- setNames(vector("list", length=length(V)), V)
+edL[[1]] <- list(edges=c(2,4), weights=c(1,1))  # Ghost -> Max, Ghost -> Anna
+edL[[2]] <- list(edges=3, weights=c(1))         # Max -> Urs
+edL[[3]] <- list(edges=c(), weights=c())        # Urs has no outgoing edges
+edL[[4]] <- list(edges=5, weights=c(1))         # Anna -> Eva
+edL[[5]] <- list(edges=c(), weights=c())        # Eva has no outgoing edges
+
+# Create the graph using the full set of nodes
+g <- new("graphNEL", nodes=V, edgeL=edL, edgemode="directed")
+
+## Step 2: Compute the true covariance matrix of the graph g
+cov.mat <- trueCov(g)
+
+## Step 3: Subset to only 2 vertices (Max, Urs), removing Ghost (latent) and others
+observed_vars <- c("Max", "Urs")  # Select only these two vertices
+obs_indices <- match(observed_vars, V)  # Get the indices of the two vertices
+
+# Subset the covariance matrix to only include the two observable variables
+true.cov <- cov.mat[obs_indices, obs_indices]
+
+# Step 4: Transform the covariance matrix into a correlation matrix
+true.corr <- cov2cor(true.cov)
+
+## Step 5: Define sufficient statistics and the independence test
+indepTest <- gaussCItest
+suffStat <- list(C = true.corr, n = 10^9)
+
+## Step 6: Apply the FCI algorithm to the two vertices (Max, Urs)
+# Use the FCI algorithm with the oracle correlation matrix
+normal.pag <- fci(suffStat, indepTest, alpha = 0.9999, labels = observed_vars, verbose=TRUE)
+
+## Step 7: Plot the resulting PAG (Partial Ancestral Graph)
+plot(normal.pag)
+
+
+
+adj_mat = amat(dag_alarm)
 
 # Subset to observed variables (X1, X2, X3, X4)
-observed_vars <- c("X1", "X2", "X3", "X4")
-adjMatrix_obs <- adjMatrix[observed_vars, observed_vars]
+# observed_vars = c("X1","X2","X3","X4")
+observed_vars = c("MVS","VMCH")
+#observed_vars = subgraph_nodes
+adjMatrix_obs = adj_mat[observed_vars, observed_vars]
 
 # Visualize the subgraph with observed variables
-g_obs <- graph_from_adjacency_matrix(adjMatrix_obs, mode = "directed")
+g_obs = graph_from_adjacency_matrix(adjMatrix_obs, mode = "directed")
 plot(g_obs)
 
 # Prepare sufficient statistics for FCI
-suffStat <- list(C = adjMatrix_obs, n = 1000)
+suffStat = list(C = adjMatrix_obs, n = 100000)
+
+# Apply FCI to estimate the PAG for observable variables
+fci_result_pag = fci(suffStat = suffStat, indepTest = gaussCItest, alpha = 0.9999, labels = observed_vars,verbose=TRUE)
+
+# Visualize the resulting PAG
+plot(fci_result)
 ```
 
 
