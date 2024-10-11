@@ -2,9 +2,9 @@
 title: "Subgraph selection and evaluation"
 author: David Reiffenscheidt and Oleksandr Zadorozhnyi
 date: "12/09/2023"
-output: html_document
- # md_document:
-  #  variant: markdown_github
+output: 
+  html_document:
+    md_document: default
 
 ---
 
@@ -103,7 +103,7 @@ Selection of the set of nodes for subsetting
 subgraph_nodes <- c("INT","VALV","LVF","LVV","PCWP","HR","CCHL","CVP","HYP","HRSA","ERCA")
 ```
 
-First procedure (bnlearns subgraph function). It is implemented through a simple subsetting of the edges which are adjacent to the vertices contained in the subgraph_nodes set. 
+**First** procedure (bnlearns subgraph function). It is implemented through a simple subsetting of the edges which are adjacent to the vertices contained in the subgraph_nodes set. 
 
 ```{r}
 procedure1 <- bnlearn::subgraph(dag_alarm, subgraph_nodes)
@@ -111,10 +111,13 @@ qgraph(procedure1, legend.cex = 0.3,
        asize=2,edge.color="black", vsize= 5)
 ```
 
-Second procedure selects the subgraph based on the following euristics.  Given the ground truth DAG $G=(V,E)$ and subset of vertices $V_{s} \subset V$ the goal is to find the corresponding set of vertices $E_{s}$ such that for $(V_s,E_s)$ the structure of the distribution for $ P_{V_s}$ does not contradict the structure of the distribution $P_{V}$ so that we the task of structure estimation (and then benchmarking) on $(V_s,E_s)$ can be done with a new ground truth. 
+**Second** procedure selects the subgraph based on the following euristics.  Given the ground truth DAG $G=(V,E)$ and subset of vertices $V_{s} \subset V$ the goal is to find the corresponding set of vertices $E_{s}$ such that for $(V_s,E_s)$ the structure of the distribution for $ P_{V_s}$ does not contradict the structure of the distribution $P_{V}$ so that we the task of structure estimation (and then benchmarking) on $(V_s,E_s)$ can be done with a new ground truth. 
 
 Let $G = (V,E)$ be the original directed acyclic graph, and $P_{V}$ is the joint distribution of random variables from $V$.
 We take two and check whether these vertices are $d-$connected given all others in $V_{s}$. If they are not $d$-connected, there is no association (no arrow in any direction). Otherwise, we have correlation (with unknown direction). If one of the directions leads to the cycle in the original graph, we resolve it and keep the other direction, otherwise we keep both directions and then get the CPDAG.
+
+**Third** procedure which consists in creating the PAG for the observable vertices in the subset-graph with respect to the latent variables in the vertices set $V \setminus V^{'}$.
+PAG is the graph in which the vertices 
 
 ```{r}
 ######### Extract subgraph function
@@ -145,7 +148,36 @@ Subsetting the dataset according to "subgraph_nodes" selection
 alarm_dfSubset <-as.data.frame(alarm_df[,subgraph_nodes])
 ```
 
+
+```{r}
+library(pcalg)
+library(igraph)
+
+# Define the true DAG using adjacency matrix (X1, X2, X3, X4 = observed, H1, H2 = latent)
+adjMatrix <- matrix(c(0, 1, 0, 0, 1, 0,  # X1 -> X2
+                      0, 0, 1, 0, 0, 1,  # X2 -> X3, X2 -> H2
+                      0, 0, 0, 1, 0, 0,  # X3 -> X4
+                      0, 0, 0, 0, 0, 0,  # X4 (no outgoing edge)
+                      0, 0, 0, 0, 0, 1,  # H1 -> H2
+                      0, 0, 0, 0, 0, 0   # H2 (no outgoing edge)
+), byrow = TRUE, nrow = 6, dimnames = list(c("X1", "X2", "X3", "X4", "H1", "H2"), 
+                                           c("X1", "X2", "X3", "X4", "H1", "H2")))
+
+# Subset to observed variables (X1, X2, X3, X4)
+observed_vars <- c("X1", "X2", "X3", "X4")
+adjMatrix_obs <- adjMatrix[observed_vars, observed_vars]
+
+# Visualize the subgraph with observed variables
+g_obs <- graph_from_adjacency_matrix(adjMatrix_obs, mode = "directed")
+plot(g_obs)
+
+# Prepare sufficient statistics for FCI
+suffStat <- list(C = adjMatrix_obs, n = 1000)
+```
+
+
 Applying constraint-based algorithms
+
 ```{r}
 Res_stable=pc.stable(alarm_dfSubset)
 
