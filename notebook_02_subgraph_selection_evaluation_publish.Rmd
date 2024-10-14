@@ -88,8 +88,8 @@ alarm_df <- huge.npn(alarm_df)
 Defining "true" graph as proposed for the ALARM dataset in bnlearn
 ```{r}
 # "True" Graph ALARM
-dag_alarm <- empty.graph(names(alarm))
-modelstring(dag_alarm) <- paste0("[HIST|LVF][CVP|LVV][PCWP|LVV][HYP][LVV|HYP:LVF]",                    "[LVF][STKV|HYP:LVF][ERLO][HRBP|ERLO:HR][HREK|ERCA:HR][ERCA][HRSA|ERCA:HR]",
+dag_alarm = empty.graph(names(alarm))
+modelstring(dag_alarm) = paste0("[HIST|LVF][CVP|LVV][PCWP|LVV][HYP][LVV|HYP:LVF]",                    "[LVF][STKV|HYP:LVF][ERLO][HRBP|ERLO:HR][HREK|ERCA:HR][ERCA][HRSA|ERCA:HR]",
 "[ANES][APL][TPR|APL][ECO2|ACO2:VLNG][KINK][MINV|INT:VLNG][FIO2]",            "[PVS|FIO2:VALV][SAO2|PVS:SHNT][PAP|PMB][PMB][SHNT|INT:PMB][INT]",              "[PRSS|INT:KINK:VTUB][DISC][MVS][VMCH|MVS][VTUB|DISC:VMCH]",                    "[VLNG|INT:KINK:VTUB][VALV|INT:VLNG][ACO2|VALV][CCHL|ACO2:ANES:SAO2:TPR]",
 "[HR|CCHL][CO|HR:STKV][BP|CO:TPR]", sep = "")
 
@@ -155,37 +155,23 @@ alarm_dfSubset <-as.data.frame(alarm_df[,subgraph_nodes])
 library(pcalg)
 library(igraph)
 
-# Define the true DAG using adjacency matrix (X1, X2, X3, X4 = observed, H1, H2 = latent)
-
-
-
-#adjMatrix <- matrix(c(0, 1, 0, 0, 1, 0,  # X1 -> X2
-#                      0, 0, 1, 0, 0, 1,  # X2 -> X3, X2 -> H2
-#                      0, 0, 0, 1, 0, 0,  # X3 -> X4
-#                      0, 0, 0, 0, 0, 0,  # X4 (no outgoing edge)
-#                      0, 0, 0, 0, 0, 1,  # H1 -> H2
-#.                     0, 0, 0, 0, 0, 0   # H2 (no outgoing edge)
-#), byrow = TRUE, nrow = 6, dimnames = list(c("X1", "X2", "X3", "X4", "H1", "H2"), 
-#                                           c("X1", "X2", "X3", "X4", "H1", "H2")))
-
-
-V <- c("Ghost", "Max", "Urs", "Anna", "Eva")  # Original node names
-edL <- setNames(vector("list", length=length(V)), V)
-edL[[1]] <- list(edges=c(2,4), weights=c(1,1))  # Ghost -> Max, Ghost -> Anna
-edL[[2]] <- list(edges=3, weights=c(1))         # Max -> Urs
-edL[[3]] <- list(edges=c(), weights=c())        # Urs has no outgoing edges
-edL[[4]] <- list(edges=5, weights=c(1))         # Anna -> Eva
-edL[[5]] <- list(edges=c(), weights=c())        # Eva has no outgoing edges
+V = c("Ghost", "Max", "Urs", "Anna", "Eva")  # Original node names
+edL = setNames(vector("list", length=length(V)), V)
+edL[[1]] = list(edges=c(2,4), weights=c(1,1))  # Ghost -> Max, Ghost -> Anna
+edL[[2]] = list(edges=3, weights=c(1))         # Max -> Urs
+edL[[3]] = list(edges=c(), weights=c())        # Urs has no outgoing edges
+edL[[4]] = list(edges=5, weights=c(1))         # Anna -> Eva
+edL[[5]] = list(edges=c(), weights=c())        # Eva has no outgoing edges
 
 # Create the graph using the full set of nodes
-g <- new("graphNEL", nodes=V, edgeL=edL, edgemode="directed")
+g = new("graphNEL", nodes=V, edgeL=edL, edgemode="directed")
 
 ## Step 2: Compute the true covariance matrix of the graph g
-cov.mat <- trueCov(g)
+cov.mat = trueCov(g)
 
 ## Step 3: Subset to only 2 vertices (Max, Urs), removing Ghost (latent) and others
-observed_vars <- c("Max", "Urs")  # Select only these two vertices
-obs_indices <- match(observed_vars, V)  # Get the indices of the two vertices
+observed_vars = c("Max", "Urs")  # Select only these two vertices
+obs_indices = match(subgraph_nodes, V)  # Get the indices of the two vertices
 
 # Subset the covariance matrix to only include the two observable variables
 true.cov <- cov.mat[obs_indices, obs_indices]
@@ -204,12 +190,12 @@ normal.pag <- fci(suffStat, indepTest, alpha = 0.9999, labels = observed_vars, v
 ## Step 7: Plot the resulting PAG (Partial Ancestral Graph)
 plot(normal.pag)
 
-
-
 adj_mat = amat(dag_alarm)
 
 # Subset to observed variables (X1, X2, X3, X4)
 # observed_vars = c("X1","X2","X3","X4")
+
+
 observed_vars = c("MVS","VMCH")
 #observed_vars = subgraph_nodes
 adjMatrix_obs = adj_mat[observed_vars, observed_vars]
