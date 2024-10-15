@@ -5,7 +5,6 @@ date: "12/09/2023"
 output: 
   html_document:
     md_document: default
-
 ---
 
 
@@ -22,6 +21,7 @@ Furthermore, it is important to be able to evaluate the results of the structure
 library("bnlearn")
 library("qgraph")
 library("igraph")
+library("pcalg")
 ```
 Reading the files from Zenodo entry in the community
 
@@ -135,7 +135,7 @@ extract_subgraph <- function(dag, nodes){
   for (i in 1:n){
     observed <- nodes[nodes!=combinations[1,i] & nodes!=combinations[2,i]] # V'\{v,w}
     if (!is.element(combinations[1,i], nbr(sg, combinations[2,i])) & # check if there exists an edge already
-        !dsep(dag,combinations[1,i],combinations[2,i])){ ### check if d-connected
+        !bnlearn::dsep(dag,combinations[1,i],combinations[2,i])){ ### check if d-connected
       sg <- set.edge(sg, from = combinations[1,i], to = combinations[2,i]) ### undirected edge in case d-connected
     }
   }
@@ -156,10 +156,6 @@ alarm_dfSubset <-as.data.frame(alarm_df[,subgraph_nodes])
 
 ```{r}
 # procedure 3: forming the PAG from the observable and latent variables
-# begin with a random test 
-
-library(pcalg)
-library(igraph)
 
 ## Step 1: Compute the true covariance matrix of the large graph G=(V,E).
 correlation_matrix = cor(alarm_df)
@@ -169,23 +165,21 @@ correlation_matrix = cor(alarm_df)
 observed_vars = subgraph_nodes
 covMatrix_obs = correlation_matrix[observed_vars, observed_vars]
 
-true.corr = cov2cor(covMatrix_obs)
-
 # Step 3: Provide nececssary information for the algorithm to work on. 
 
-indepTest <- gaussCItest
+indepTest <- pcalg::gaussCItest
 suffStat <- list(C = covMatrix_obs, n = 1000)
 
 ## Step 4: Apply the FCI algorithm to the selected vertices
 
 # Use the FCI algorithm with the oracle correlation matrix
-normal.pag <- fci(suffStat, indepTest, alpha = 0.05, labels = observed_vars, verbose=TRUE)
+normal.pag <- pcalg:: fci(suffStat, indepTest, alpha = 0.05, labels = observed_vars, verbose=TRUE)
 
 ## Step 5: Plot the resulting PAG (Partial Ancestral Graph)
 plot(normal.pag, 
      main = "Partial Ancestral Graph (PAG) for Subset of Nodes",
-     vertex.color = "lightgreen",
      vertex.label.cex = 0.8)
+
 ```
 
 
@@ -254,7 +248,7 @@ Selfdefined function for different measures
 measure = function(estim, true){
   result <- matrix(1,4)
   com <- bnlearn::compare(estim, true)
-  shd <- shd(estim,true)
+  shd <- bnlearn::shd(estim,true)
   result[1,] <- com$tp
   result[2,] <- com$fp
   result[3,] <- com$fn
@@ -274,8 +268,6 @@ measure(Res_fiamb, procedure1)
 measure(Res_mmpc, procedure1)
 measure(Res_hc, procedure1)
 measure(Res_tabu, procedure1)
-
-
 ```
 
 Metric evaluation for procedure 2
