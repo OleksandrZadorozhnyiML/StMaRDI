@@ -154,12 +154,11 @@ alarm_dfSubset <-as.data.frame(alarm_df[,subgraph_nodes])
 ```
 
 
-```{r}
+```{r,echo = FALSE}
 # procedure 3: forming the PAG from the observable and latent variables
 
 ## Step 1: Compute the true covariance matrix of the large graph G=(V,E).
 correlation_matrix = cor(alarm_df)
-
 
 #Step 2: subselect the observed variables and compute the  sub selected graph. 
 observed_vars = subgraph_nodes
